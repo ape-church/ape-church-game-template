@@ -52,9 +52,9 @@ At a high level:
 
 Note that we use state `currentView` in the game component (`components/ExampleGame.tsx`) to track the state of the game.
 The states are as follows:
-0. setup view
-1. ongoing view
-2. game over view
+- 0: setup view
+- 1: ongoing view
+- 2: game over view
 
 ### Default State
 
