@@ -1,8 +1,8 @@
 'use client';
 
-import { CircleDollarSign, Wallet } from 'lucide-react';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Image from 'next/image';
+import { CircleDollarSign, Wallet } from 'lucide-react';
 
 interface CompactAmountInputProps {
     min: number;
@@ -16,8 +16,6 @@ interface CompactAmountInputProps {
     setUsdMode: (mode: boolean) => void;
     themeColorBackground: string;
 }
-
-// --- THE COMPACT INPUT COMPONENT ---
 
 export const BetAmountInput: React.FC<CompactAmountInputProps> = ({
     min,
@@ -131,12 +129,8 @@ export const BetAmountInput: React.FC<CompactAmountInputProps> = ({
                 />
             </div>
 
-            {/* The "Super Cool" Interactive Slider */}
-            <div className="relative h-8 bg-gray-900/70 border border-[var(--theme-color)]/30 rounded-[5px] overflow-hidden">
-                {/* <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[var(--theme-color)]/50 rounded-tl-md"></div>
-          <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[var(--theme-color)]/50 rounded-tr-md"></div>
-          <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[var(--theme-color)]/50 rounded-bl-md"></div>
-          <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[var(--theme-color)]/50 rounded-br-md"></div> */}
+            {/* Interactive Slider */}
+            <div className="relative h-8 bg-gray-900/70 border border-(--theme-color)/30 rounded-[5px] overflow-hidden">
                 <div className="absolute inset-0 flex items-center px-2">
                     <div className="w-full h-3 bg-gray-800 rounded-[4px]"></div>
                 </div>
@@ -148,7 +142,7 @@ export const BetAmountInput: React.FC<CompactAmountInputProps> = ({
                         transition: 'width 0.2s ease-out'
                     }}
                 >
-                    <div className="w-full h-3 bg-[var(--theme-color)]/70"></div>
+                    <div className="w-full h-3 bg-(--theme-color)/70"></div>
                 </div>
                 <div
                     className="absolute top-0 bottom-0 flex items-center"
@@ -179,7 +173,7 @@ export const BetAmountInput: React.FC<CompactAmountInputProps> = ({
                         key={amount}
                         onClick={() => handleQuickAdd(amount)}
                         disabled={disabled || value + amount > max}
-                        className="text-xs font-semibold text-white py-1.5 bg-gray-700/20 border border-[var(--theme-color)]/30 hover:bg-[var(--theme-color)]/40 hover:border-[var(--theme-color)]/60 rounded-[5px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        className="text-xs font-semibold text-white py-1.5 bg-gray-700/20 border border-(--theme-color)/30 hover:bg-(--theme-color)/40 hover:border-(--theme-color)/60 rounded-[5px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         +{amount}
                     </button>

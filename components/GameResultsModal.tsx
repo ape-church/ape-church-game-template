@@ -1,9 +1,10 @@
 "use client";
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Maximize2, Minimize2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { X, Maximize2, Minimize2 } from "lucide-react";
 
 type GameResultsModalProps = {
     isOpen: boolean;

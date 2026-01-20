@@ -109,7 +109,7 @@ const ExampleGameWindow: React.FC<ExampleGameWindowProps> = ({
             {/* Could put payout popup here */}
             {/* ... */}
 
-            {/* Game Frame and Background */}
+            {/* Game Frame and Background - currently implemented in the GameWindow component. Remove there if needed. */}
             <div className="absolute inset-0 z-0 flex items-center justify-center">
                 {/* Contained Background - note that this is currently implemented in the GameWindow component */}
                 {/* {game.gameBackground && (
@@ -123,7 +123,7 @@ const ExampleGameWindow: React.FC<ExampleGameWindowProps> = ({
                     </div>
                 )} */}
 
-                {/* Frame Overlay */}
+                {/* Frame Overlay if needed */}
                 {/* <div className="absolute inset-0 z-20 pointer-events-none">
                     <Image
                         src={game.frameImage}
@@ -138,7 +138,7 @@ const ExampleGameWindow: React.FC<ExampleGameWindowProps> = ({
                     // ref={gameContentRef} // ref - if needed
                     className="absolute inset-x-[21%] inset-y-[20%] mt-4 xs:mt-6 sm:mt-8 z-10 flex justify-around gap-1 sm:gap-2 lg:gap-1 aspect-square"
                 >
-                    Content Here
+                    Content Here...
                 </div>
             </div>
         </div>

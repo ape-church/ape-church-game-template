@@ -1,12 +1,13 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Game } from "@/lib/games"; // Your game type
-import { Button } from "@/components/ui/button";
-import { Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Howl } from "howler";
+import { Volume2, VolumeX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import GameResultsModal from "./GameResultsModal";
+import { Game } from "@/lib/games"; // Your game type
 
 type GameWindowProps = {
     game: Game;

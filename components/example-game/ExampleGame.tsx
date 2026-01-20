@@ -17,7 +17,7 @@ import {
     zeroAddress,
 } from "viem";
 import { toast } from "sonner";
-// import './example-game.styles.css'
+// import './example-game.styles.css' use if needed
 
 interface ExampleGameComponentProps {
     game: Game;

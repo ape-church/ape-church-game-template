@@ -50,6 +50,12 @@ At a high level:
 
 ## Required Game States
 
+Note that we use state `currentView` in the game component (`components/ExampleGame.tsx`) to track the state of the game.
+The states are as follows:
+0. setup view
+1. ongoing view
+2. game over view
+
 ### Default State
 
 Before the user enters any bet information, the game **must**:
@@ -182,9 +188,9 @@ While not strictly required, the following structure is encouraged: UPDATE
 
 If you have questions while building your game or run into integration issues, you can reach out through the following channels:
 
-* **Email:** [support@yourproject.com](mailto:support@yourproject.com)
-* **Telegram:** [https://t.me/yourproject](https://t.me/yourproject)
-* **Discord:** [https://discord.gg/yourproject](https://discord.gg/yourproject)
+* **Email:** [ministry@ape.church](mailto:ministry@ape.church)
+* **Telegram:** [https://t.me/+wgoE4TSxxcM5Njdh](https://t.me/+wgoE4TSxxcM5Njdh)
+* **Discord:** [https://discord.gg/3Jxeeqt59W](https://discord.gg/3Jxeeqt59W)
 
 We recommend including:
 
