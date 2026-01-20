@@ -447,7 +447,7 @@ const ExampleGameSetupCard: React.FC<ExampleGameSetupCardProps> = ({
                         {/* spin button + auto spin */}
                         <div className="font-roboto flex flex-col items-center gap-3">
                             {game.advanceToNextStateAsset ? (
-                                <Button onClick={onSpin} className="w-full">
+                                <button onClick={onSpin} className="w-full">
                                     <Image
                                         src={game.advanceToNextStateAsset}
                                         alt="Spin Button"
@@ -455,7 +455,7 @@ const ExampleGameSetupCard: React.FC<ExampleGameSetupCardProps> = ({
                                         height={179.82}
                                         className="transition-transform duration-100 ease-out active:scale-97 w-[109px] h-[100px] sm:w-[131px] sm:h-[120px] lg:w-[184px] lg:h-[168.35px]"
                                     />
-                                </Button>
+                                </button>
                             ) : (
                                 <Button onClick={onSpin} className="w-full">
                                     Spin

@@ -350,10 +350,9 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
                                             className="w-full flex flex-col gap-3 mt-2"
                                         >
                                             {/* Share PNL button - full width above play again if rewatch is present */}
-                                            {showPNL && onRewatch != null && showRewatchOption && gameTitle && (
-                                                // <PNLCard>
-                                                <p>PNL card here</p>
-                                            )}
+                                            {/* {showPNL && onRewatch != null && showRewatchOption && gameTitle && (
+                                                <PNLCard>
+                                            )} */}
 
                                             {/* Reset and Rewatch/Share PNL row */}
                                             <div className="w-full flex flex-row gap-3">
@@ -389,9 +388,9 @@ const GameResultsModal: React.FC<GameResultsModalProps> = ({
                                                 )}
 
                                                 {/* Share PNL button - next to reset if rewatch not present */}
-                                                {showPNL && (!onRewatch || !showRewatchOption) && gameTitle && (
-                                                    <p>PNL card here</p>
-                                                )}
+                                                {/* {showPNL && (!onRewatch || !showRewatchOption) && gameTitle && (
+                                                     <PNLCard>
+                                                )} */}
                                             </div>
 
                                             {/* Play again button - always at bottom, full width */}

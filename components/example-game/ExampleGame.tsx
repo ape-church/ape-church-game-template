@@ -102,6 +102,10 @@ const ExampleGameComponent: React.FC<ExampleGameComponentProps> = ({ game }) => 
 
             if (receiptSuccess) {
                 toast.success("Transaction complete!");
+                setTimeout(() => {
+                    setIsLoading(false);
+                    setCurrentView(1); // Set to ongoing view
+                }, 1000);
             }
             else {
                 console.error("Something went wrong..");

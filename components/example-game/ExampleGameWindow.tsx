@@ -31,12 +31,12 @@ const ExampleGameWindow: React.FC<ExampleGameWindowProps> = ({
 
     // SFX
     // The hook automatically keeps the volume and mute state synchronized.
-    const [winSFX] = useSound('/audio/sfx/slots_small_win.wav', {
+    const [winSFX] = useSound('/example-game-assets/sfx/win.wav', {
         volume: sfxVolume,
         soundEnabled: !muteSfx,
         interrupt: true // Allows the sound to restart if triggered again rapidly
     });
-    const [loseSFX] = useSound('/audio/sfx/slots_lose.mp3', {
+    const [loseSFX] = useSound('/example-game-assets/sfx/lose.mp3', {
         volume: sfxVolume,
         soundEnabled: !muteSfx,
         interrupt: true // Allows the sound to restart if triggered again rapidly
@@ -106,59 +106,8 @@ const ExampleGameWindow: React.FC<ExampleGameWindowProps> = ({
 
     return (
         <div className="absolute inset-0 z-0 flex flex-col items-center justify-center text-white">
-            {/* Payout Popup Animation */}
-            {showPayoutPopup && (
-                <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                    <motion.div
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.5, type: "spring" }}
-                        className="relative text-center p-8"
-                    >
-                        {/* image - nice win or big win */}
-                        {payoutPopupImage && (
-                            <Image
-                                src={payoutPopupImage}
-                                alt="payout popup image"
-                                width={240}
-                                height={240}
-                                className="mx-auto w-[140px] h-[140px] sm:w-[240px] sm:h-[240px]"
-                            />
-                        )}
-                        <h2
-                            className="text-5xl sm:text-7xl font-bold"
-                            style={{
-                                color: game.themeColorBackground,
-                                textShadow: `0 0 15px ${game.themeColorBackground}CC`,
-                            }}
-                        >
-                            {payoutPopupText || ""}
-                        </h2>
-                        {payoutPopupSubText && (
-                            <div className="mt-4 text-2xl text-foreground sm:text-3xl uppercase tracking-widest">
-                                {payoutPopupSubText}
-                            </div>
-                        )}
-                        {payoutPopupPriceText && (
-                            <div className="text-lg sm:text-xl text-foreground mt-2 uppercase tracking-widest">
-                                {payoutPopupPriceText}
-                            </div>
-                        )}
-                    </motion.div>
-                </div>
-            )}
-
-            {/* payout text at bottom of window */}
-            {payoutMessageText && (
-                <div className="absolute bottom-0 z-30 w-full p-2.5 bg-[#12181CBF] backdrop-blur-sm text-center">
-                    <p
-                        className="text-base sm:text-lg font-bold"
-                        style={{ color: game.themeColorBackground }}
-                    >
-                        {payoutMessageText}
-                    </p>
-                </div>
-            )}
+            {/* Could put payout popup here */}
+            {/* ... */}
 
             {/* Game Frame and Background */}
             <div className="absolute inset-0 z-0 flex items-center justify-center">

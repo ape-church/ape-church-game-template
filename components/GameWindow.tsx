@@ -131,7 +131,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
 
             {/* Loading state */}
             {isLoading && (
-                <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-[#12181C]/75 backdrop-blur-xs rounded-[8px] font-roboto">
+                <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-[#12181C]/75 text-white backdrop-blur-xs rounded-[8px] font-roboto">
                     Loading...
                 </div>
             )}
