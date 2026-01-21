@@ -3,6 +3,46 @@
 
 This repository is a **template and reference implementation** for teams building web-based games that will later be **listed and integrated into the main platform**.
 
+## How to Use This Template (Submission Flow)
+
+This repository is **read-only** for external developers. Do **not** submit pull requests to this repository.
+
+---
+
+### Step-by-step
+
+1. **Fork this repository**
+
+   * Use **“Use this template”** or fork it into your own GitHub account
+
+2. **Build your game in your fork**
+
+   * Replace the example game with your own implementation
+   * Follow the required project structure
+   * Implement all required lifecycle functions
+   * Add optimized assets (including required banner assets)
+
+3. **Test your game locally**
+
+   * Default state renders before bet input
+   * Game can fully reset and replay
+   * Rewatch works without placing a new bet
+
+4. **Submit your game for review**
+
+   * Open a Pull Request from your fork to the **`ape-church-game-submissions`** repository [link](https://github.com/ape-church/ape-church-game-submissions)
+   * One Pull Request per game
+
+5. **Review & iteration**
+
+   * Our team will review your submission
+   * Requested changes should be made in your fork
+
+6. **Approval & integration**
+
+   * Approved games are manually integrated into the live platform
+   * Merging a PR does **not** guarantee production deployment
+
 ---
 
 ## Tech Requirements
