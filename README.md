@@ -30,7 +30,7 @@ This repository is **read-only** for external developers. Do **not** submit pull
 
 4. **Submit your game for review**
 
-   * Open a Pull Request from your fork to the **`ape-church-game-submissions`** repository [link](https://github.com/ape-church/ape-church-game-submissions)
+   * Open a Pull Request from your fork to the **`ape-church-game-submissions`** repository ([here](https://github.com/ape-church/ape-church-game-submissions))
    * One Pull Request per game
 
 5. **Review & iteration**
