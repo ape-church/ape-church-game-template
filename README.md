@@ -254,8 +254,6 @@ If you follow these guidelines, your game will be:
 * Easier to integrate
 * Easier to scale
 
-Happy building 🎮
-
 
 
 
