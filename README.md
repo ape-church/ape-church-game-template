@@ -198,7 +198,7 @@ Games that do not properly reset or replay will not be accepted.
 
 ## Project Structure
 
-While not strictly required, the following structure is encouraged: UPDATE
+While not strictly required, the following structure is encouraged:
 
 ```
 ├── app/
