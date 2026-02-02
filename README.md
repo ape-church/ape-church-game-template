@@ -234,7 +234,8 @@ ape-church-game-template/
 │       ├── MyGame.tsx             	   # My game logic (E)
 │       ├── MyGameWindow.tsx       	   # My window wrapper (E)
 │       ├── MyGameSetupCard.tsx    	   # My setup card (E)
-│       └── my-game.styles.css     	   # My game styles (E)
+│       ├── my-game.styles.css     	   # My game styles (E)
+│       └── ...                        # Other components. Write light-weight components as needed here (E)
 ├── lib/
 ├── ├── gameConfig.ts                  # Shared type definitions (E)
 ├── ├── metadata.json                  # metadata file (E)
