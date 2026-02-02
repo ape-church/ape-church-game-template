@@ -1,264 +1,393 @@
+# Ape Church Game Template
 
-# Ape Church Game Template Repository
+Welcome to the official game template for Ape Church! This repository provides everything you need to build, test, and submit your web-based game.
 
-This repository is a **template and reference implementation** for teams building web-based games that will later be **listed and integrated into the main platform**.
+## 🎮 Quick Start
 
-## How to Use This Template (Submission Flow)
+### 1. Clone This Repository
 
-This repository is **read-only** for external developers. Do **not** submit pull requests to this repository.
+```bash
+git clone https://github.com/ape-church/ape-church-game-template
+cd ape-church-game-template
+npm install
+npm run dev
+```
 
----
+Visit `http://localhost:3000` to see the example game running.
 
-### Step-by-step
+### 2. Build Your Game
 
-1. **Fork this repository**
+Replace the "my game" with your own implementation. All your game files should go in:
 
-   * Use **“Use this template”** or fork it into your own GitHub account
+```
+components/my-game/
+├── MyGame.tsx              # Your main game logic
+├── MyGameWindow.tsx        # Your game window wrapper
+├── MyGameSetupCard.tsx     # Your game setup/bet UI
+└── my-game.styles.css      # Optional game-specific styles
+```
 
-2. **Build your game in your fork**
+### 3. Test Locally
 
-   * Replace the example game with your own implementation
-   * Follow the required project structure
-   * Implement all required lifecycle functions
-   * Add optimized assets (including required banner assets)
+Make sure your game:
+- ✅ Renders correctly in the default state
+- ✅ Handles all lifecycle functions properly
+- ✅ Can fully reset and replay
+- ✅ Works with the provided mock components
 
-3. **Test your game locally**
+### 4. Submit Your Game
 
-   * Default state renders before bet input
-   * Game can fully reset and replay
-   * Rewatch works without placing a new bet
+When ready, follow the detailed **[SUBMISSION_GUIDE.md](SUBMISSION_GUIDE.md)** to submit your game to the hackathon platform.
 
-4. **Submit your game for review**
+**Quick overview:**
+1. Fork the [hackathon-platform](https://github.com/ape-church/ape-church-hackathon-platform) repository
+2. Create your team folder in `app/submissions/`
+3. Copy your game files from this template
+4. Open a Pull Request
+5. Automated validation runs
+6. Team reviews within 24 hours
+7. Game deployed in next hourly batch
 
-   * Open a Pull Request from your fork to the **`ape-church-game-submissions`** repository ([here](https://github.com/ape-church/ape-church-game-submissions))
-   * One Pull Request per game
-
-5. **Review & iteration**
-
-   * Our team will review your submission
-   * Requested changes should be made in your fork
-
-6. **Approval & integration**
-
-   * Approved games are manually integrated into the live platform
-   * Merging a PR does **not** guarantee production deployment
-
----
-
-## Tech Requirements
-
-Your game **must** meet the following baseline requirements:
-
-* **TypeScript**
-
-  * All game logic, state management, and components should be written in TypeScript
-  * No `any`-heavy or loosely typed game state
-
-* **Optimized Assets**
-
-  * Images must be compressed (WebP preferred when possible)
-  * Audio must be compressed and optimized for web delivery
-  * Avoid uncompressed WAV, large PNGs, or oversized spritesheets
-
-* **Deterministic & Replayable**
-
-  * Games must be able to replay an on-chain result without placing a new bet
-  * Game state must be fully resettable and reproducible
+📖 **[Read the complete submission guide →](SUBMISSION_GUIDE.md)**
 
 ---
 
-## Game Lifecycle Overview
+## 🎯 Technical Requirements
 
-All games are expected to follow a predictable lifecycle so they can be:
+### TypeScript
 
-* Initialized
-* Played
-* Advanced (if applicable)
-* Reset
-* Replayed or rewatched
+All game logic, state management, and components must be written in TypeScript:
 
-At a high level:
+- ✅ Strong typing for game state
+- ✅ Proper interfaces and types
+- ❌ No excessive use of `any`
 
-1. User lands on the game (default state)
+### Optimized Assets
+
+- **Images:** Compressed, WebP preferred (fallback to PNG/JPG)
+- **Audio:** Compressed, optimized for web (MP3/OGG)
+- **Total size:** Keep under 10MB per game
+- ❌ Avoid uncompressed WAV, large PNGs, oversized spritesheets
+
+### Required Banner Assets
+
+Two images are required for your game listing:
+
+1. **Card Image** (`card.png`)
+   - Aspect ratio: 1:1 (square)
+   - Recommended: 512x512px
+   - Used in game gallery
+
+2. **Banner Image** (`banner.png`)
+   - Aspect ratio: 2:1 (wide)
+   - Recommended: 1024x512px
+   - Used on game detail page
+
+### Deterministic & Replayable
+
+Games must be able to replay an on-chain result without placing a new bet:
+
+- ✅ Game state fully resettable
+- ✅ Results reproducible from on-chain data
+- ✅ Rewatch works without new transaction
+
+---
+
+## 🔄 Game Lifecycle
+
+All games follow a predictable lifecycle:
+
+```
+1. Default State (no bet placed)
+   ↓
 2. User enters bet information
-3. `playGame()` is called (this is where the blockchain contracts will be called)
-4. Game progresses via internal state or `handleStateAdvance()`
-5. Game finishes
-6. User may **Play Again** or **Rewatch** the previous game, or **reset** to configure another game. 
+   ↓
+3. playGame() called (siumlates blockchain interaction)
+   ↓
+4. Game progresses (animations, reveals)
+   ↓
+5. Game finishes (results shown)
+   ↓
+6. User can: Play Again | Rewatch | Reset
+```
 
----
+### Game States
 
-## Required Game States
+Use `currentView` to track game state:
 
-Note that we use state `currentView` in the game component (`components/ExampleGame.tsx`) to track the state of the game.
-The states are as follows:
-- 0: setup view
-- 1: ongoing view
-- 2: game over view
+- **0**: Setup view (bet configuration)
+- **1**: Ongoing view (game playing)
+- **2**: Game over view (results)
 
 ### Default State
 
-Before the user enters any bet information, the game **must**:
+Before any bet is placed, your game must:
 
-* Render a stable, non (or minimally) animated default UI
-* Not assume a bet amount, wallet connection, or on-chain data
+- Render a stable, static or animated default UI
+- Not assume bet amount or wallet connection
+- Not require on-chain data to display
 
 ---
 
-## Required Game Functions
+## 🛠️ Required Game Functions
 
-Your game **must expose the following functions**. These act as the contract between your game and the platform.
+Your game component must expose these functions:
 
 ### `playGame()`
 
 Initializes and starts a new on-chain game.
 
-This function is responsible for:
+```typescript
+const playGame = async () => {
+  // 1. Validate bet input
+  // 2. Execute on-chain transaction (console.log sufficient)
+  // 3. Retrieve random number/result
+  // 4. Initialize game state for animations
+  // 5. Update currentView to 1 (ongoing)
+};
+```
 
-* Validating user bet input
-* Executing the on-chain transaction
-* Retrieving the random number / game result
-* Initializing all game state needed for animations and logic
+**Purpose:** Start a brand new game with a new bet.
 
-> Think of `playGame()` as **"start a brand new game"**.
+### `handleStateAdvance()` (optional)
 
----
+Used for games with multiple steps or rounds.
 
-### `handleStateAdvance()` *(optional)*
+```typescript
+const handleStateAdvance = () => {
+  // Progress to next state
+  // Examples: next spin, next card reveal, next round
+};
+```
 
-Used for games that advance through multiple steps or rounds.
-
-Examples:
-
-* Slot machines with multiple spins
-* Games with chained reveals
-* Multi-phase animations
-
----
+**Examples:**
+- Slot machines with multiple spins
+- Multi-phase animations
+- Games with chained reveals
 
 ### `handleReset()`
 
-Fully resets the game to its initial state.
+Fully resets the game to initial state.
 
-This **must**:
+```typescript
+const handleReset = () => {
+  // 1. Clear all game state
+  // 2. Reset animations
+  // 3. Reset multipliers, reels, cards, timers
+  // 4. Set currentView back to 0 (setup)
+  // After reset, game looks like first load
+};
+```
 
-* Clear all game state
-* Reset animations
-* Reset multipliers, reels, cards, timers, etc.
-* Remove any references to the previous on-chain game
-
-> After calling `handleReset()`, the game should look like it did on first load.
-
----
+**Purpose:** Clean slate for new game setup.
 
 ### `handlePlayAgain()`
 
-Starts a brand new game after one has completed.
+Starts a brand new game after completion.
 
-This function should:
+```typescript
+const handlePlayAgain = () => {
+  handleReset();
+  // User will configure new bet
+  // Then playGame() will be called
+};
+```
 
-1. Call `handleReset()`
-2. Call `playGame()`
-3. Attach **new critical identifiers** used to construct a new on-chain game
-
-> This is how users place another bet and generate a new on-chain result.
-
----
+**Purpose:** Quick path to play another round.
 
 ### `handleRewatch()`
 
-Replays a previously completed on-chain game **without placing a new bet**.
+Replays previous game without new bet.
 
-This function should:
+```typescript
+const handleRewatch = () => {
+  // 1. Reset game state
+  // 2. Re-initialize using existing on-chain data
+  // 3. Replay animations with same result
+  // 4. NO new transaction or bet
+};
+```
 
-1. Call `handleReset()`
-2. Re-initialize the game using existing on-chain data
-3. Prepare the game so it can advance via `handleStateAdvance()` (if applicable)
-
-Important notes:
-
-* **No currency is wagered**
-* **No new transaction is sent**
-* This is strictly for viewing the outcome again
-
----
-
-## Integration Expectations
-
-To be listed on the platform, your game must:
-
-* Follow this lifecycle exactly
-* Expose the required functions
-* Avoid global side effects
-* Cleanly reset between games
-
-Games that do not properly reset or replay will not be accepted. 
+**Purpose:** View previous game result again.
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
-While not strictly required, the following structure is encouraged:
+Recommended structure in the template:
+*DNE = Do Not Edit*
+*E = Edit*
 
 ```
+ape-church-game-template/
 ├── app/
-│   └── page.tsx                        # Main game page
+│   ├── globals.css                    # Global styles (DNE)
+│   └── page.tsx                       # Main game page (DNE)
 ├── components/
-│   ├── GameWindow.tsx                  # Generic game window
-│   ├── GameResultsModal.tsx            # Generic results modal
-│   └── example-game/
-│       ├── ExampleGame.tsx             # Specific game component
-│       ├── ExampleGameWindow.tsx       # Specific game window - child of GameWindow
-│       ├── ExampleGameSetupCard.tsx    # Specific game setup card
-│       └── example-game.styles.css     # Optional, game-scoped styles
+│   ├── BetAmountInput.tsx             # Template bet input (DNE)
+│   └── CustomSlider.tsx               # Template slider (DNE)
+│   ├── GameWindow.tsx                 # Template game window component (DNE)
+│   ├── GameResultsModal.tsx           # Template results modal (DNE)
+│   ├── ui/
+│   │   └── ...                        # ShadCN ui components (DNE)
+│   └── my-game/
+│       ├── MyGame.tsx             	   # My game logic (E)
+│       ├── MyGameWindow.tsx       	   # My window wrapper (E)
+│       ├── MyGameSetupCard.tsx    	   # My setup card (E)
+│       └── my-game.styles.css     	   # My game styles (E)
 ├── lib/
-│   └── games.ts                        # Game types
+├── ├── gameConfig.ts                  # Shared type definitions (E)
+├── ├── metadata.json                  # metadata file (E)
 ├── public/
-│   └── example-game-assets/
-│       ├── background.png              # Background image for game window
-│       ├── card.png                    # REQUIRED – 1:1 aspect ratio (e.g. 512x512)
-│       ├── banner.png                  # REQUIRED – 2:1 aspect ratio (e.g. 1024x512)
-│       ├── advance-button.png          # Optional – Button to advance to next state
-│       └── ...other assets    
+│   └── my-game-assets/ 			      # Folder to add all assets (E)
+│       ├── background.png
+│       ├── card.png                   # REQUIRED: 1:1 ratio
+│       ├── banner.png                 # REQUIRED: 2:1 ratio
+│       └── ...other assets
+├── README.md
+└── package.json
 ```
 
 ---
 
-## Support & Contact
+## 🧪 Testing Your Game
 
-If you have questions while building your game or run into integration issues, you can reach out through the following channels:
+### Local Testing Checklist
 
-* **Email:** [ministry@ape.church](mailto:ministry@ape.church)
-* **Telegram:** [https://t.me/+wgoE4TSxxcM5Njdh](https://t.me/+wgoE4TSxxcM5Njdh)
-* **Discord:** [https://discord.gg/3Jxeeqt59W](https://discord.gg/3Jxeeqt59W)
+Before submitting, verify:
 
-We recommend including:
+- [ ] Game renders in default state without errors
+- [ ] All lifecycle functions work correctly
+- [ ] `playGame()` initializes game properly
+- [ ] `handleReset()` fully clears game state
+- [ ] `handlePlayAgain()` starts fresh game
+- [ ] `handleRewatch()` replays without new bet
+- [ ] `handleStateAdvance()` works (if applicable)
+- [ ] Animations are smooth and performant
+- [ ] Assets are optimized (< 10MB total)
+- [ ] No console errors or warnings
+- [ ] TypeScript compiles without errors
+- [ ] Game works on different screen sizes
 
-* A short description of your game
-* The issue or question you’re encountering
-* Screenshots or screen recordings if applicable
+### Mock Components
+
+This template includes mock versions of platform components:
+
+- `GameWindow` - Window container
+- `GameResultsModal` - Results display
+- `BetAmountInput` - Bet amount selector
+- `CustomSlider` - Slider control
+
+These allow you to develop locally. When submitted to the platform, your imports will automatically use the real components.
 
 ---
 
-## Final Notes
+## ⚠️ Common Issues
 
-This template exists to make life easier for:
+### Import Paths
 
-* Game developers
-* Reviewers
-* Platform integrators
+Make sure to use absolute imports:
 
-If you follow these guidelines, your game will be:
+```tsx
+// ✅ Correct
+import GameWindow from '@/components/GameWindow';
+import { GameState } from '@/lib/types';
 
-* Easier to audit
-* Easier to integrate
-* Easier to scale
+// ❌ Wrong
+import GameWindow from '../../../components/GameWindow';
+```
 
+### Asset Paths
 
+Use proper Next.js public paths:
 
+```tsx
+// ✅ Correct
+<Image src="/my-game-assets/background.png" />
 
+// ❌ Wrong
+<Image src="./assets/background.png" />
+```
 
+### State Management
 
+Keep game state isolated and resettable:
 
+```tsx
+// ✅ Correct - all state in one place
+const [gameState, setGameState] = useState<GameState>(initialState);
 
+const handleReset = () => {
+  setGameState(initialState);
+};
 
+// ❌ Wrong - scattered state
+const [score, setScore] = useState(0);
+const [multiplier, setMultiplier] = useState(1);
+// ... forgetting to reset some state
+```
+
+---
+
+## 📞 Support
+
+Need help? Reach out through:
+
+- **Email:** [ministry@ape.church](mailto:ministry@ape.church)
+- **Telegram:** [https://t.me/+wgoE4TSxxcM5Njdh](https://t.me/+wgoE4TSxxcM5Njdh)
+- **Discord:** [https://discord.gg/3Jxeeqt59W](https://discord.gg/3Jxeeqt59W)
+
+When asking for help, include:
+
+- Brief description of your game
+- The issue you're encountering
+- Screenshots or error messages
+- Steps to reproduce
+
+---
+
+## 🏆 Great Games Tips
+
+### Stand Out
+
+- Polish your animations and sound effects
+- Create unique game mechanics
+- Optimize performance
+- Write clean, readable code
+- Add helpful comments
+
+### Don't Worry About
+
+- Complex blockchain integration (we handle that)
+- Backend infrastructure (we provide it)
+- Production deployment (automated)
+- Hosting costs (covered)
+
+### Focus On
+
+- Fun, engaging gameplay
+- Smooth user experience
+- Visual polish
+- Code quality
+- Following the lifecycle requirements
+
+---
+
+## 📝 Final Checklist
+
+Before submitting your PR:
+
+- [ ] Game fully implements all required lifecycle functions
+- [ ] Both banner assets included (card.png, banner.png)
+- [ ] metadata.json complete and valid
+- [ ] Assets optimized (< 10MB total)
+- [ ] No TypeScript errors
+- [ ] Tested locally and works correctly
+- [ ] README.md included (optional but nice)
+- [ ] Code is clean and commented
+- [ ] Follows naming conventions (kebab-case)
+- [ ] One game per PR
+
+---
+
+Good luck with your submission! We can't wait to see what you build! 🎮🚀

@@ -132,12 +132,22 @@
   --radius: 0.5rem;
 }
 
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
   body {
     @apply text-foreground;
   }
+}
+
+html {
+  background-image: url("/background.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-color: var(--background);
+  height: 100%;
 }

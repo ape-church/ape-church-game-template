@@ -7,7 +7,7 @@ import { Howl } from "howler";
 import { Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameResultsModal from "./GameResultsModal";
-import { Game } from "@/lib/games"; // Your game type
+import { Game } from "@/lib/gameConfig"; // Your game type
 
 type GameWindowProps = {
     game: Game;

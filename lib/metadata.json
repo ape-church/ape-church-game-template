@@ -1,0 +1,25 @@
+{
+    "team": "team-awesome",
+    "gameName": "space-shooter",
+    "displayTitle": "Space Shooter Extreme",
+    "description": "Defend Earth from alien invaders in this action-packed shooter!",
+    "authors": [
+      {
+        "name": "Jane Smith",
+        "github": "janesmith",
+        "email": "jane@example.com"
+      },
+      {
+        "name": "Bob Johnson",
+        "github": "bobjohnson",
+        "email": "bob@example.com"
+      }
+    ],
+    "status": "pending",
+    "category": "arcade",
+    "tags": ["shooter", "arcade", "sci-fi", "action"],
+    "thumbnail": "assets/card.png",
+    "mainComponent": "SpaceShooter.tsx",
+    "windowComponent": "SpaceShooterWindow.tsx",
+    "setupComponent": "SpaceShooterSetupCard.tsx"
+  }
