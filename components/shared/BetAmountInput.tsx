@@ -110,7 +110,7 @@ export const BetAmountInput: React.FC<CompactAmountInputProps> = ({
                     />
                 ) : (
                     <Image
-                        src="/ape_coin.png"
+                        src="/shared/ape_coin.png"
                         alt="Ape Coin Icon"
                         width={20}
                         height={20}
