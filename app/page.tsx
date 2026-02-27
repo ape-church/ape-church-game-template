@@ -1,6 +1,5 @@
-import { myGame } from "@/lib/gameConfig";
+import { myGame } from "@/components/my-game/myGameConfig";
 import MyGameComponent from "@/components/my-game/MyGame";
-// import { GameLeaderboardModal } from "@/components/GameLeaderboardModal";
 
 export async function generateMetadata() {
   return {
@@ -16,10 +15,6 @@ const MyGamePage: React.FC = () => {
         <h1 className="text-3xl font-semibold mr-2">
           {myGame.title}
         </h1>
-        {/* <GameLeaderboardModal
-          gameAddress={myGame.address}
-          gameName={myGame.title}
-        /> */}
       </div>
       <MyGameComponent game={myGame} />
     </div>

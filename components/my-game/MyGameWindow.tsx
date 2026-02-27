@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import useSound from 'use-sound';
-import { Game } from "@/lib/gameConfig"; // Your game type
+import { Game } from "@/lib/games";
 
 interface MyGameWindowProps {
     game: Game;
@@ -31,12 +31,12 @@ const MyGameWindow: React.FC<MyGameWindowProps> = ({
 
     // SFX
     // The hook automatically keeps the volume and mute state synchronized.
-    const [winSFX] = useSound('/my-game-assets/sfx/win.wav', {
+    const [winSFX] = useSound('/my-game/sfx/win.wav', {
         volume: sfxVolume,
         soundEnabled: !muteSfx,
         interrupt: true // Allows the sound to restart if triggered again rapidly
     });
-    const [loseSFX] = useSound('/my-game-assets/sfx/lose.mp3', {
+    const [loseSFX] = useSound('/my-game/sfx/lose.mp3', {
         volume: sfxVolume,
         soundEnabled: !muteSfx,
         interrupt: true // Allows the sound to restart if triggered again rapidly

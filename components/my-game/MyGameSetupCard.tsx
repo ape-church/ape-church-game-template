@@ -14,9 +14,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
-import { Game } from "@/lib/gameConfig"; // Your game type
-import BetAmountInput from "../BetAmountInput";
-import { CustomSlider } from "../CustomSlider";
+import { Game } from "@/lib/games";
+import BetAmountInput from "../shared/BetAmountInput";
+import { CustomSlider } from "../shared/CustomSlider";
+import ChipSelection, { Chip } from "../shared/ChipSelection";
 
 interface MyGameSetupCardProps {
     game: Game;
@@ -84,6 +85,16 @@ const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
     // const themeColorText = game.themeColorText;
 
     const usdMode = false;
+
+    // Demo chip data for this example game
+    const chips: Chip[] = [
+        { id: "1", value: 1, image: "/shared/chips/chip_1.png" },
+        { id: "5", value: 5, image: "/shared/chips/chip_5.png" },
+        { id: "10", value: 10, image: "/shared/chips/chip_10.png" },
+        { id: "25", value: 25, image: "/shared/chips/chip_25.png" },
+    ];
+
+    const [selectedChipId, setSelectedChipId] = React.useState<string | null>(null);
 
     const getCurrentWalletAmount = (): number => {
         return walletBalance;
@@ -335,6 +346,14 @@ const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
                                 themeColorBackground={themeColorBackground}
                             />
                         </div>
+
+                        {/* demo chip selection - note that this would not be used with the BetAmountInput */}
+                        <ChipSelection
+                            chips={chips}
+                            selectedChipId={selectedChipId}
+                            onChipSelect={(chip) => setSelectedChipId(chip.id)}
+                            onRemoveAllBets={() => setSelectedChipId(null)}
+                        />
 
                         {/* number of spins */}
                         <div className="mt-8">

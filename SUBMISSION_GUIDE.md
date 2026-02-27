@@ -14,13 +14,14 @@ components/my-game/
 
 ### 2. Game Configuration (Required)
 ```
-lib/games.ts
+lib/gameConfig.ts
+metadata.json
 ```
 > **Note:** Only submit the game configuration object (e.g., `myGame` or your game's export). You may remove the `exampleGame` if you've replaced it.
 
 ### 3. Game Assets (Required)
 ```
-public/my-game-assets/
+public/my-game/
 ├── background.png          # REQUIRED
 ├── card.png                # REQUIRED - 1:1 aspect ratio
 ├── banner.png              # REQUIRED - 2:1 aspect ratio
@@ -58,9 +59,9 @@ Do **NOT** submit these files (they are platform-managed):
 Before submitting, ensure:
 
 - [ ] All game components are in `components/my-game/`
-- [ ] All assets are in `public/my-game-assets/`
+- [ ] All assets are in `public/my-game/`
 - [ ] Game configuration is exported from `lib/games.ts`
-- [ ] All asset paths in code use `/my-game-assets/` (not `/example-game-assets/`)
+- [ ] All asset paths in code use `/my-game/` (not `/example-game-assets/`)
 - [ ] Game follows the required lifecycle (playGame, handleReset, handlePlayAgain, handleRewatch)
 - [ ] Game can reset and replay properly
 - [ ] All TypeScript types are properly defined (no excessive `any` types)
