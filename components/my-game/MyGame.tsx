@@ -1,21 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Gamepad2 } from "lucide-react";
 import { getPayout, randomBytes, Game } from "@/lib/games";
 import GameWindow from "@/components/shared/GameWindow";
 import MyGameWindow from "./MyGameWindow";
 import MyGameSetupCard from "./MyGameSetupCard";
-import {
-    bytesToHex,
-    encodeAbiParameters,
-    formatEther,
-    Hex,
-    isAddress,
-    parseEther,
-    zeroAddress,
-} from "viem";
+import { bytesToHex, Hex } from "viem";
 import { toast } from "sonner";
 // import './my-game.styles.css' use if needed
 
@@ -268,6 +259,7 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game }) => {
                     isUserOriginalPlayer={true}
                     showPNL={shouldShowPNL}
                     isGamePaused={false}
+                    resultModalDelayMs={1000}
                 >
                     <MyGameWindow
                         game={game}

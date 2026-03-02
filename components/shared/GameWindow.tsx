@@ -4,19 +4,18 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Howl } from "howler";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, Music, AudioLines } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GameResultsModal from "./GameResultsModal";
-import { Game } from "@/lib/games"; // Your game type
+import { Game } from "@/lib/games";
 
 type GameWindowProps = {
     game: Game;
     isLoading: boolean;
     isGameFinished: boolean;
-    customHeightMobile?: string; // optional custom height for the game window
-    children: React.ReactNode; // game specific game window
+    customHeightMobile?: string;
+    children: React.ReactNode;
 
-    //game related data
     betAmount: number | null;
     payout: number | null;
     inReplayMode: boolean;
@@ -24,12 +23,17 @@ type GameWindowProps = {
     showPNL: boolean;
     isGamePaused?: boolean;
 
-    // game actions
     onReset: () => void;
     onPlayAgain?: () => void;
     playAgainText?: string;
     onRewatch?: () => void;
     currentGameId: bigint;
+
+    disableBuiltInSong?: boolean;
+    onMusicMutedChange?: (muted: boolean) => void;
+    onSfxMutedChange?: (muted: boolean) => void;
+
+    resultModalDelayMs?: number;
 };
 
 const fallbackSong = "/shared/audio/song.mp3";
@@ -52,63 +56,73 @@ const GameWindow: React.FC<GameWindowProps> = ({
     onPlayAgain,
     playAgainText = "Play Again",
     onRewatch,
-    currentGameId
+    currentGameId,
+
+    disableBuiltInSong = false,
+    onMusicMutedChange,
+    onSfxMutedChange,
+
+    resultModalDelayMs = 0,
 }) => {
     const audioRef = useRef<Howl | null>(null);
     const [muteMusic, setMuteMusic] = useState(false);
-    const [musicVolume, setMusicVolume] = useState(0.5);
+    const [muteSfx, setMuteSfx] = useState(false);
+    const [showResults, setShowResults] = useState(false);
 
-    // Effect 1: Handles creating, changing, and cleaning up the audio source.
     useEffect(() => {
-        // Create a new Howl object for the current game's song.
+        if (disableBuiltInSong) return;
+
         const sound = new Howl({
             src: [game.song || fallbackSong],
             loop: true,
-            volume: musicVolume, // Initialize with current volume
-            mute: muteMusic, // Initialize with current mute state
+            volume: 0.5,
+            mute: muteMusic,
         });
 
         audioRef.current = sound;
 
-        // If not muted, attempt to play immediately
         if (!muteMusic) {
-            // Howler handles the play promise internally.
             sound.play();
-        } // Cleanup function: Runs when the component unmounts OR before the song changes.
+        }
 
         return () => {
-            // Use unload() to stop the sound and free up resources.
             sound.unload();
             audioRef.current = null;
         };
-    }, [game.song]); // Dependency: Re-run only when the song URL changes.
-
-    // Effect 2: Synchronizes the audio volume with the global context.
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (audio) {
-            // Howler uses a method to set volume
-            audio.volume(musicVolume);
-        }
-    }, [musicVolume]); // Effect 3: Synchronizes the mute state.
+    }, [game.song, disableBuiltInSong]);
 
     useEffect(() => {
+        if (disableBuiltInSong) return;
         const audio = audioRef.current;
-        if (!audio) return; // Synchronize the mute state.
+        if (!audio) return;
 
         audio.mute(muteMusic);
-
-        // Ensure it starts playing if unmuted and hasn't started yet (handles autoplay policies)
         if (!muteMusic && !audio.playing()) {
             audio.play();
         }
-    }, [muteMusic]);
+    }, [muteMusic, disableBuiltInSong]);
 
-    // The toggle function now ONLY updates the global state.
-    // The useEffect hooks above will handle the actual audio manipulation.
-    const muteSongToggle = () => {
-        setMuteMusic(!muteMusic);
-    };
+    useEffect(() => {
+        onMusicMutedChange?.(muteMusic);
+    }, [muteMusic, onMusicMutedChange]);
+
+    useEffect(() => {
+        onSfxMutedChange?.(muteSfx);
+    }, [muteSfx, onSfxMutedChange]);
+
+    useEffect(() => {
+        if (isGameFinished && resultModalDelayMs > 0) {
+            const id = window.setTimeout(() => setShowResults(true), resultModalDelayMs);
+            return () => window.clearTimeout(id);
+        }
+        setShowResults(isGameFinished);
+    }, [isGameFinished, resultModalDelayMs]);
+
+    useEffect(() => {
+        if (!isGameFinished) {
+            setShowResults(false);
+        }
+    }, [isGameFinished]);
 
     return (
         <div
@@ -117,7 +131,6 @@ const GameWindow: React.FC<GameWindowProps> = ({
             )}
         >
 
-            {/* Game paused state */}
             {isGamePaused && (
                 <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-2 bg-[#12181C]/75 backdrop-blur-xs rounded-[8px] font-roboto p-4">
                     <h2 className="font-semibold text-xl sm:text-3xl text-center">
@@ -130,22 +143,20 @@ const GameWindow: React.FC<GameWindowProps> = ({
                 </div>
             )}
 
-            {/* Loading state */}
             {isLoading && (
                 <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-[#12181C]/75 text-white backdrop-blur-xs rounded-[8px] font-roboto">
                     Loading...
                 </div>
             )}
 
-            {/* Game results modal */}
-            {isGameFinished &&
+            {showResults &&
                 betAmount !== null &&
                 payout !== null &&
                 onReset &&
                 onPlayAgain && (
                     <GameResultsModal
                         key={currentGameId.toString()}
-                        isOpen={isGameFinished}
+                        isOpen={showResults}
                         payout={payout}
                         betAmount={betAmount}
                         usdMode={false}
@@ -162,8 +173,6 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     />
                 )}
 
-            {/* Game window content */}
-            {/* Background image / video */}
             {game.animatedBackground && game.animatedBackground !== "" ? (
                 <video
                     src={game.animatedBackground}
@@ -189,23 +198,37 @@ const GameWindow: React.FC<GameWindowProps> = ({
                 />
             )}
 
-            {/* Game specific content */}
             {children}
 
-            {/* Sound toggle in bottom right */}
-            <Button
-                variant="ghost"
-                size="icon"
-                className="absolute bottom-4 right-4 z-30 p-2 bg-[#151C21]/40 rounded-[8px] text-[#91989C]"
-                onClick={muteSongToggle}
-                title={muteMusic ? "Unmute sound" : "Mute sound"}
-            >
-                {muteMusic ? (
-                    <VolumeX className="w-6 h-6" />
-                ) : (
-                    <Volume2 className="w-6 h-6" />
-                )}
-            </Button>
+            <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-2 bg-[#151C21]/40 rounded-[8px] text-[#91989C]"
+                    onClick={() => setMuteSfx((prev) => !prev)}
+                    title={muteSfx ? "Unmute SFX" : "Mute SFX"}
+                >
+                    {muteSfx ? (
+                        <AudioLines className="w-5 h-5 opacity-40" />
+                    ) : (
+                        <AudioLines className="w-5 h-5" />
+                    )}
+                </Button>
+
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-2 bg-[#151C21]/40 rounded-[8px] text-[#91989C]"
+                    onClick={() => setMuteMusic((prev) => !prev)}
+                    title={muteMusic ? "Unmute music" : "Mute music"}
+                >
+                    {muteMusic ? (
+                        <VolumeX className="w-6 h-6" />
+                    ) : (
+                        <Volume2 className="w-6 h-6" />
+                    )}
+                </Button>
+            </div>
         </div>
     );
 };
