@@ -6,7 +6,7 @@
   "authors": [
     {
       "name": "Example Partner",
-      "email": "example@example.com"
+      "telegram": "example_telegram_username"
     }
   ],
   "status": "pending",
@@ -22,5 +22,6 @@
   "windowComponent": "MyGameWindow.tsx",
   "setupComponent": "MyGameSetupCard.tsx",
   "configFile": "myGameConfig.ts",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "submittedAt": "2025-01-15"
 }

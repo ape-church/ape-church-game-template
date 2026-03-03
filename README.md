@@ -140,7 +140,7 @@ Fill out `metadata.json` at the root before submitting. Every field is required 
   "authors": [
     {
       "name": "Your Name",
-      "email": "your@email.com"
+      "telegram": "your_telegram_username"
     }
   ],
   "status": "pending",
@@ -152,7 +152,8 @@ Fill out `metadata.json` at the root before submitting. Every field is required 
   "windowComponent": "YourGameWindow.tsx",
   "setupComponent": "YourGameSetupCard.tsx",
   "configFile": "yourGameConfig.ts",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "submittedAt": "2025-01-15"
 }
 ```
 
