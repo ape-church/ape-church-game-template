@@ -31,7 +31,7 @@ const MyGameWindow: React.FC<MyGameWindowProps> = ({
 
     // SFX
     // The hook automatically keeps the volume and mute state synchronized.
-    const [winSFX] = useSound('/my-game/sfx/win.wav', {
+    const [winSFX] = useSound('/my-game/sfx/win.mp3', {
         volume: sfxVolume,
         soundEnabled: !muteSfx,
         interrupt: true // Allows the sound to restart if triggered again rapidly
