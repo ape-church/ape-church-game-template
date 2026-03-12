@@ -9,6 +9,14 @@
       "telegram": "example_telegram_username"
     }
   ],
+  "revenueShare": [
+    {
+      "name": "Your Name",
+      "telegram": "your_telegram_username",
+      "address": "0x0000000000000000000000000000000000000000",
+      "share": 100
+    }
+  ],
   "status": "pending",
   "category": "arcade",
   "tags": [

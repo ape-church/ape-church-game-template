@@ -127,6 +127,48 @@ const handleReset = () => setGameState(initialState)
 
 ---
 
+## Revenue Share
+
+Ape Church operates a revenue share model for game creators. A percentage of the house edge collected from your game is paid out to you as the creator.
+
+If you are the sole creator, you receive 100% of the creator revenue split. If multiple people contributed to the game, you decide how to split it — shares must add up to exactly 100.
+
+This is configured in `metadata.json` under the `revenueShare` field:
+
+**Single creator:**
+```json
+"revenueShare": [
+  {
+    "name": "Your Name",
+    "telegram": "your_telegram_username",
+    "address": "0x0000000000000000000000000000000000000000",
+    "share": 100
+  }
+]
+```
+
+**Multiple creators:**
+```json
+"revenueShare": [
+  {
+    "name": "Your Name",
+    "telegram": "your_telegram_username",
+    "address": "0x0000000000000000000000000000000000000000",
+    "share": 60
+  },
+  {
+    "name": "Collaborator Name",
+    "telegram": "collaborator_telegram",
+    "address": "0x0000000000000000000000000000000000000000",
+    "share": 40
+  }
+]
+```
+
+`address` must be a valid ERC-20 address to receive Ape Coin. Double-check this carefully — payments are sent to this address automatically.
+
+---
+
 ## metadata.json
 
 Fill out `metadata.json` at the root before submitting. Every field is required unless marked optional:
@@ -143,6 +185,14 @@ Fill out `metadata.json` at the root before submitting. Every field is required 
       "telegram": "your_telegram_username"
     }
   ],
+  "revenueShare": [
+    {
+      "name": "Your Name",
+      "telegram": "your_telegram_username",
+      "address": "0x0000000000000000000000000000000000000000",
+      "share": 100
+    }
+  ],
   "status": "pending",
   "category": "arcade",
   "tags": ["arcade", "example"],
@@ -153,7 +203,7 @@ Fill out `metadata.json` at the root before submitting. Every field is required 
   "setupComponent": "YourGameSetupCard.tsx",
   "configFile": "yourGameConfig.ts",
   "version": "1.0.0",
-  "submittedAt": "2025-01-15"
+  "submittedAt": "YYYY-MM-DD"
 }
 ```
 
@@ -184,6 +234,8 @@ submissions/your-team-name/your-game-name/metadata.json
 - [ ] `card.png` and `banner.png` present at correct dimensions
 - [ ] All assets under 10MB total, no WAV files
 - [ ] `metadata.json` complete and valid
+- [ ] `revenueShare` shares sum to exactly 100
+- [ ] All `address` fields are valid ERC-20 addresses
 - [ ] No TypeScript errors (`npx tsc --noEmit`)
 - [ ] No console errors in browser
 - [ ] Tested on different screen sizes
