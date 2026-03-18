@@ -2,6 +2,7 @@
 
 This repository is the official starting point for building games on the Ape Church platform. It includes everything you need to build, test, and submit your game.
 
+**Comprehensive game builder docs:** [docs.ape.church/building/build-a-game](https://docs.ape.church/building/build-a-game)  
 **Submissions repo:** [ape-church-game-submissions](https://github.com/ape-church/ape-church-game-submissions)
 
 ---
