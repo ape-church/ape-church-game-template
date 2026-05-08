@@ -128,6 +128,23 @@ const handleReset = () => setGameState(initialState)
 
 ---
 
+## Three.js (3D graphics)
+
+The template includes **[Three.js](https://threejs.org/)** (`three`) and TypeScript types (`@types/three`). You can build full WebGL scenes alongside React—common patterns include creating a `WebGLRenderer` in a `useEffect`, attaching it to a container `ref`, driving an animation loop with `requestAnimationFrame`, and **disposing** resources in the effect cleanup (cancel the frame, remove resize listeners, call `renderer.dispose()`, detach the canvas).
+
+Import the core library and optional addons from the package root:
+
+```tsx
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+```
+
+Keep **3D logic inside your game folder** (for example `MyGameWindow.tsx`), respect the same asset rules (paths under `/your-game-name/...` from `public/`), and stay within the **10MB** total asset budget—large models and textures add up quickly.
+
+For a real shipped example built on this template, see **`jnkyz-skate-or-crash`** in the [ape-church-game-submissions](https://github.com/ape-church/ape-church-game-submissions) repo (`components/games/jnkyz-skate-or-crash/`), which uses GLTF loaders, animation mixers, and a resize-aware renderer. In that repo, static assets live under `public/submissions/...`, so URLs differ from the paths you use while developing in this template.
+
+---
+
 ## Revenue Share
 
 Ape Church operates a revenue share model for game creators. A percentage of the house edge collected from your game is paid out to you as the creator.

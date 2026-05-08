@@ -177,7 +177,31 @@ import GameWindow from '../../components/shared/GameWindow'
 
 ---
 
-## 9. Code Quality Rules
+## 9. Three.js (3D graphics)
+
+The template ships with **Three.js** (`three`) and **`@types/three`**. Game authors may use WebGL/3D in their components—typically in the window component—without adding dependencies.
+
+**Imports:**
+```typescript
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+// Other addons live under three/addons/...
+```
+
+**React integration:**
+- Mount the renderer to a container `ref` inside `useEffect` (client components only; use `"use client"` where needed).
+- Store animation frame IDs, loaders, and disposable Three objects so cleanup can run when the effect tears down: cancel `requestAnimationFrame`, remove window listeners, dispose the renderer, remove `renderer.domElement` from the DOM, and stop/dispose mixers or controls as appropriate.
+- Drive rendering from props/refs synced from game state so `handleReset()` can reset React state while the Three scene stays consistent (re-init scene state in effects or imperative refs when the round restarts, matching patterns used for timers and animation elsewhere).
+
+**Assets:** GLBs and textures belong under `public/my-game/` with URLs like `/my-game/models/scene.glb`. Large 3D assets count toward the **10MB** per-game asset limit.
+
+**Reference:** The submissions repo game **`jnkyz-skate-or-crash`** (`components/games/jnkyz-skate-or-crash/`, especially `MyGameWindow.tsx`) demonstrates GLTF loading, `AnimationMixer`, lighting, and cleanup on unmount. Paths there use `/submissions/jnkyz-skate-or-crash/...` because that repository’s layout differs from this template.
+
+Do **not** edit `package.json` to add Three.js—it is already a dependency of this template.
+
+---
+
+## 10. Code Quality Rules
 
 - Functions should be focused and under 50 lines where possible. Break complex logic into helper functions.
 - No global side effects. All state lives inside the React component tree.
@@ -187,7 +211,7 @@ import GameWindow from '../../components/shared/GameWindow'
 
 ---
 
-## 10. metadata.json
+## 11. metadata.json
 
 Fill out `metadata.json` at the repo root. This file is required for submission. All fields are required unless marked optional.
 
@@ -226,7 +250,7 @@ Rules:
 
 ---
 
-## 11. Completion Checklist
+## 12. Completion Checklist
 
 Verify every item before considering the build complete. Do not submit until all are true.
 
