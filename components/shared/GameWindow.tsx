@@ -127,7 +127,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
     return (
         <div
             className={cn(
-                "lg:basis-2/3 w-full rounded-[12px] border-[2.25px] sm:border-[3.75px] lg:border-[4.68px] border-[#2A3640] relative overflow-hidden",
+                "lg:basis-2/3 w-full h-full rounded-[12px] border-[2.25px] sm:border-[3.75px] lg:border-[4.68px] border-[#2A3640] relative overflow-hidden",
             )}
         >
 
