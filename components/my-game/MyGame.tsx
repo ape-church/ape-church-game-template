@@ -6,15 +6,18 @@ import { getPayout, randomBytes, Game } from "@/lib/games";
 import GameWindow from "@/components/shared/GameWindow";
 import MyGameWindow from "./MyGameWindow";
 import MyGameSetupCard from "./MyGameSetupCard";
+import { myGame } from "./myGameConfig";
 import { bytesToHex, Hex } from "viem";
 import { toast } from "sonner";
 // import './my-game.styles.css' use if needed
 
 interface MyGameComponentProps {
-    game: Game;
+    /** Passed by the template app page; omitted on the submissions preview site. */
+    game?: Game;
 }
 
-const MyGameComponent: React.FC<MyGameComponentProps> = ({ game }) => {
+const MyGameComponent: React.FC<MyGameComponentProps> = ({ game: gameProp }) => {
+    const game = gameProp ?? myGame;
     // Initializations
     const themeColorBackground = game.themeColorBackground;
     const router = useRouter();
