@@ -15,12 +15,16 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { Game } from "@/lib/games";
+import { cn } from "@/lib/utils";
 import BetAmountInput from "../shared/BetAmountInput";
 import { CustomSlider } from "../shared/CustomSlider";
 import ChipSelection, { Chip } from "../shared/ChipSelection";
 
 interface MyGameSetupCardProps {
     game: Game;
+    /** "sidebar" = right column on desktop. "standalone" = full-width card (mobile full-size layout). */
+    placement?: "sidebar" | "standalone";
+    className?: string;
     onPlay: () => void;
     onSpin: () => void;
     onRewatch: () => void;
@@ -57,6 +61,8 @@ const MAX_PROFIT_INFO =
 
 const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
     game,
+    placement = "sidebar",
+    className,
     onPlay,
     onSpin,
     onRewatch,
@@ -314,7 +320,13 @@ const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
     };
 
     return (
-        <Card className="lg:basis-1/3 p-6 flex flex-col">
+        <Card
+            className={cn(
+                "p-6 flex flex-col",
+                placement === "sidebar" && "lg:basis-1/3",
+                className,
+            )}
+        >
             {currentView === 0 && (
                 <>
                     <CardContent className="font-roboto">

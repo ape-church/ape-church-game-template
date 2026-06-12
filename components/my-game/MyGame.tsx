@@ -4,9 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getPayout, randomBytes, Game } from "@/lib/games";
 import GameWindow from "@/components/shared/GameWindow";
+import WideGameWindow from "@/components/shared/WideGameWindow";
 import MyGameWindow from "./MyGameWindow";
 import MyGameSetupCard from "./MyGameSetupCard";
-import { myGame } from "./myGameConfig";
+import MyGameInGameOverlay from "./MyGameInGameOverlay";
+import { myGame, myGameLayout } from "./myGameConfig";
 import { bytesToHex, Hex } from "viem";
 import { toast } from "sonner";
 // import './my-game.styles.css' use if needed
@@ -18,14 +20,14 @@ interface MyGameComponentProps {
 
 const MyGameComponent: React.FC<MyGameComponentProps> = ({ game: gameProp }) => {
     const game = gameProp ?? myGame;
-    // Initializations
-    const themeColorBackground = game.themeColorBackground;
+    const isFullSizeLayout = myGameLayout === "full-size";
     const router = useRouter();
     const searchParams = useSearchParams();
     const replayIdString = searchParams.get("id");
     const walletBalance = 25; // TODO: get wallet balance from wallet
     const [isGameOngoing, setIsGameOngoing] = React.useState<boolean>(false); // used for hiding global balance when game is ongoing
     const [currentView, setCurrentView] = React.useState<0 | 1 | 2>(0); // 0: setup view, 1: ongoing view, 2: game over view
+    const [showSetupModal, setShowSetupModal] = React.useState<boolean>(false);
 
     // Game related state and initializations
     const [betAmount, setBetAmount] = React.useState<number>(0);
@@ -205,6 +207,7 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game: gameProp }) => 
         setGameOver(false);
         setCurrentSpinIndex(0);
         setIsGameOngoing(false);
+        setShowSetupModal(false);
 
         // Reset replay ID if in replay mode
         if (replayIdString !== null) {
@@ -243,65 +246,124 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game: gameProp }) => 
         setIsGameOngoing(false);
     };
 
+    const setupCardProps = {
+        game,
+        onPlay: async () => await playGame(),
+        onSpin: handleStateAdvance,
+        onRewatch: handleRewatch,
+        onReset: () => handleReset(false),
+        onPlayAgain: async () => await handlePlayAgain(),
+        playAgainText,
+        currentView,
+        betAmount: currentView == 0 ? betAmount : getActiveBetAmount(),
+        setBetAmount,
+        numberOfSpins,
+        setNumberOfSpins,
+        isLoading,
+        payout,
+        spinsLeft: getSpinsLeft(),
+        jackpotMultiplier: getPayout(game.payouts, 0, 0, 0) / 10000,
+        inReplayMode: replayIdString !== null,
+        account: undefined,
+        walletBalance,
+        playerAddress: undefined,
+        isGamePaused: false,
+        profile: undefined,
+        minBet: 1,
+        maxBet: 100,
+    };
+
+    const gameWindowContent = (
+        <MyGameWindow
+            game={game}
+            isSpinning={isSpinning}
+            currentSpinIndex={currentSpinIndex}
+            gameCompleted={gameOver}
+            spinResults={formatSpinResults()}
+            betAmount={getActiveBetAmount()}
+            payoutAmount={getTotalPayout()}
+        />
+    );
+
+    const gameWindowShellProps = {
+        game,
+        currentGameId,
+        isLoading,
+        isGameFinished: gameOver,
+        onPlayAgain: handlePlayAgain,
+        playAgainText,
+        onRewatch: handleRewatch,
+        onReset: () => handleReset(false),
+        betAmount: getActiveBetAmount(),
+        payout,
+        inReplayMode: replayIdString !== null,
+        isUserOriginalPlayer: true,
+        showPNL: shouldShowPNL,
+        isGamePaused: false,
+        resultModalDelayMs: 1000,
+    };
+
+    if (isFullSizeLayout) {
+        return (
+            <div>
+                <WideGameWindow
+                    {...gameWindowShellProps}
+                    skipDefaultBackground={false}
+                >
+                    {gameWindowContent}
+                    <MyGameInGameOverlay
+                        game={game}
+                        currentView={currentView}
+                        isLoading={isLoading}
+                        betAmount={betAmount}
+                        setBetAmount={setBetAmount}
+                        numberOfSpins={numberOfSpins}
+                        payout={payout}
+                        spinsLeft={getSpinsLeft()}
+                        walletBalance={walletBalance}
+                        onPlay={async () => await playGame()}
+                        onSpin={handleStateAdvance}
+                        onOpenCustomize={() => setShowSetupModal(true)}
+                    />
+                </WideGameWindow>
+
+                {/* Mobile: setup card below the game window */}
+                <MyGameSetupCard
+                    {...setupCardProps}
+                    placement="standalone"
+                    className="md:hidden mt-4"
+                />
+
+                {/* Desktop: customize modal for advanced bet options */}
+                {showSetupModal && (
+                    <div className="hidden md:flex fixed inset-0 z-50 items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                        <div className="relative w-full max-w-md">
+                            <button
+                                type="button"
+                                onClick={() => setShowSetupModal(false)}
+                                className="absolute -top-10 right-0 text-white/80 hover:text-white text-sm font-medium"
+                            >
+                                Close
+                            </button>
+                            <MyGameSetupCard
+                                {...setupCardProps}
+                                placement="standalone"
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     return (
         <div>
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 lg:gap-10">
-                {/* Game Window */}
-                <GameWindow
-                    game={game}
-                    currentGameId={currentGameId}
-                    isLoading={isLoading}
-                    isGameFinished={gameOver}
-                    onPlayAgain={handlePlayAgain}
-                    playAgainText={playAgainText}
-                    onRewatch={handleRewatch}
-                    onReset={() => handleReset(false)}
-                    betAmount={getActiveBetAmount()}
-                    payout={payout}
-                    inReplayMode={replayIdString !== null}
-                    isUserOriginalPlayer={true}
-                    showPNL={shouldShowPNL}
-                    isGamePaused={false}
-                    resultModalDelayMs={1000}
-                >
-                    <MyGameWindow
-                        game={game}
-                        isSpinning={isSpinning}
-                        currentSpinIndex={currentSpinIndex}
-                        gameCompleted={gameOver}
-                        spinResults={formatSpinResults()}
-                        betAmount={getActiveBetAmount()}
-                        payoutAmount={getTotalPayout()}
-                    />
+                <GameWindow {...gameWindowShellProps}>
+                    {gameWindowContent}
                 </GameWindow>
 
-                {/* Game Setup Card */}
-                <MyGameSetupCard
-                    game={game}
-                    onPlay={async () => await playGame()}
-                    onSpin={handleStateAdvance}
-                    onRewatch={handleRewatch}
-                    onReset={() => handleReset(false)}
-                    onPlayAgain={async () => await handlePlayAgain()}
-                    playAgainText={playAgainText}
-                    currentView={currentView}
-                    betAmount={currentView == 0 ? betAmount : getActiveBetAmount()}
-                    setBetAmount={setBetAmount}
-                    numberOfSpins={numberOfSpins}
-                    setNumberOfSpins={setNumberOfSpins}
-                    isLoading={isLoading}
-                    payout={payout}
-                    spinsLeft={getSpinsLeft()}
-                    jackpotMultiplier={getPayout(game.payouts, 0, 0, 0) / 10000}
-                    inReplayMode={replayIdString !== null}
-                    account={undefined}
-                    walletBalance={walletBalance}
-                    playerAddress={undefined}
-                    isGamePaused={false}
-                    profile={undefined}
-                    minBet={1}
-                    maxBet={100}
-                />
+                <MyGameSetupCard {...setupCardProps} placement="sidebar" />
             </div>
         </div>
     );

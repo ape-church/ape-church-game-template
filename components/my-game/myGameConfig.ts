@@ -1,5 +1,18 @@
 import { Game } from "@/lib/games";
 
+/**
+ * Layout mode for this game.
+ *
+ * - "two-column" (default): Game window on the left, setup card on the right (desktop).
+ * - "full-size": Full-width game window with controls overlaid inside the playfield.
+ *   On mobile, the setup card renders below the game window instead.
+ *
+ * Reference: Gimboz of the Galaxy uses the full-size pattern.
+ */
+export type GameLayout = "two-column" | "full-size";
+
+export const myGameLayout: GameLayout = "full-size";
+
 export const myGame: Game = {
     title: "My Game",
     description: "This is my game",

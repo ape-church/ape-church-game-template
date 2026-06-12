@@ -52,14 +52,68 @@ Your `components/my-game/` folder must contain at minimum:
 | `MyGameSetupCard.tsx` | Bet configuration UI shown in setup view. |
 
 Optional files you may add:
-- `myGameConfig.ts` — configuration constants (multipliers, speeds, thresholds, etc.)
+- `myGameConfig.ts` — configuration constants (multipliers, speeds, thresholds, layout mode, etc.)
 - `my-game.styles.css` — game-scoped styles
+- `MyGameInGameOverlay.tsx` — in-game control bar for full-size layout (see § Layout Options)
 - Additional component files for complex game elements
 - A `svg/` subfolder for SVG components
 
 ---
 
-## 4. Required Lifecycle Functions
+## 4. Layout Options
+
+Games can use one of two desktop layout modes. Set this in `myGameConfig.ts`:
+
+```typescript
+export type GameLayout = "two-column" | "full-size";
+export const myGameLayout: GameLayout = "two-column"; // change to "full-size" if needed
+```
+
+### Two-column (default)
+
+Game window on the left (2/3 width), setup card on the right (1/3 width). Uses shared `GameWindow`.
+
+```
+┌─────────────────────┬──────────┐
+│                     │  Setup   │
+│    Game Window      │   Card   │
+│                     │          │
+└─────────────────────┴──────────┘
+```
+
+Best for: card games, table games, games with detailed bet configuration.
+
+### Full-size
+
+Full-width game window with a fixed 4:3 aspect ratio. Controls are overlaid inside the playfield on desktop. On mobile, the setup card renders below the game window instead.
+
+```
+┌──────────────────────────────────┐
+│                                  │
+│         Game Window              │
+│                                  │
+│  ┌────────────────────────────┐  │
+│  │  Balance | Bets | Actions  │  │  ← overlay controls
+│  └────────────────────────────┘  │
+└──────────────────────────────────┘
+```
+
+Best for: slots, arcade games, immersive games where artwork should fill the frame.
+
+**Full-size implementation checklist:**
+
+1. Set `myGameLayout` to `"full-size"` in `myGameConfig.ts`
+2. Import `WideGameWindow` from `@/components/shared/WideGameWindow` in `MyGame.tsx`
+3. Use `MyGameInGameOverlay.tsx` as a starting point for your in-game control bar
+4. Customize overlay controls in `MyGameInGameOverlay.tsx` (bet presets, action buttons, progress panel)
+5. Keep `MyGameSetupCard` for mobile (`md:hidden`) and the desktop customize modal
+6. If your game paints its own background, pass `skipDefaultBackground` to `WideGameWindow`
+
+**Reference:** Gimboz of the Galaxy in the main Ape Church repo uses this pattern.
+
+---
+
+## 5. Required Lifecycle Functions
 
 `MyGame.tsx` must implement all of the following. These are the contract between your game and the platform. Do not rename them.
 
@@ -95,7 +149,7 @@ Optional files you may add:
 
 ---
 
-## 5. Game State
+## 6. Game State
 
 Use `currentView` to track which view is active:
 
@@ -121,12 +175,13 @@ const [isAnimating, setIsAnimating] = useState(false)
 
 ---
 
-## 6. Shared Components
+## 7. Shared Components
 
 Import shared components using absolute paths. Do not copy them into your game folder.
 
 ```typescript
 import GameWindow from '@/components/shared/GameWindow'
+import WideGameWindow from '@/components/shared/WideGameWindow'
 import GameResultsModal from '@/components/shared/GameResultsModal'
 import BetAmountInput from '@/components/shared/BetAmountInput'
 import CustomSlider from '@/components/shared/CustomSlider'
@@ -142,7 +197,7 @@ import GameWindow from '../../components/shared/GameWindow'
 
 ---
 
-## 7. Asset Rules
+## 8. Asset Rules
 
 **Location** — all assets must live in `public/my-game/`. Do not place assets anywhere else.
 
@@ -168,7 +223,7 @@ import GameWindow from '../../components/shared/GameWindow'
 
 ---
 
-## 8. TypeScript Rules
+## 9. TypeScript Rules
 
 - All game state must have explicit TypeScript interfaces. Define these in `myGameConfig.ts` or at the top of `MyGame.tsx`.
 - Do not use `any`. Use `unknown` and narrow the type, or define a proper interface.
@@ -177,7 +232,7 @@ import GameWindow from '../../components/shared/GameWindow'
 
 ---
 
-## 9. Three.js (3D graphics)
+## 10. Three.js (3D graphics)
 
 The template ships with **Three.js** (`three`) and **`@types/three`**. Game authors may use WebGL/3D in their components—typically in the window component—without adding dependencies.
 
@@ -201,7 +256,7 @@ Do **not** edit `package.json` to add Three.js—it is already a dependency of t
 
 ---
 
-## 10. Code Quality Rules
+## 11. Code Quality Rules
 
 - Functions should be focused and under 50 lines where possible. Break complex logic into helper functions.
 - No global side effects. All state lives inside the React component tree.
@@ -211,7 +266,7 @@ Do **not** edit `package.json` to add Three.js—it is already a dependency of t
 
 ---
 
-## 11. metadata.json
+## 12. metadata.json
 
 Fill out `metadata.json` at the repo root. This file is required for submission. All fields are required unless marked optional.
 
@@ -250,7 +305,7 @@ Rules:
 
 ---
 
-## 12. Completion Checklist
+## 13. Completion Checklist
 
 Verify every item before considering the build complete. Do not submit until all are true.
 

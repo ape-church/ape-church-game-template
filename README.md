@@ -28,6 +28,7 @@ app/
 components/
   shared/                         # DO NOT EDIT — platform components, import freely
     GameWindow.tsx
+    WideGameWindow.tsx
     GameResultsModal.tsx
     BetAmountInput.tsx
     CustomSlider.tsx
@@ -37,6 +38,7 @@ components/
     MyGame.tsx
     MyGameWindow.tsx
     MyGameSetupCard.tsx
+    MyGameInGameOverlay.tsx       # Full-size layout — in-game control bar
     myGameConfig.ts               # Optional — game configuration constants
     my-game.styles.css            # Optional — game-scoped styles
 public/
@@ -71,6 +73,23 @@ Track state using `currentView`:
 - `0` — setup view
 - `1` — ongoing view
 - `2` — game over view
+
+---
+
+## Layout Options
+
+Games support two layout modes, configured in `myGameConfig.ts`:
+
+```typescript
+export const myGameLayout: GameLayout = "two-column"; // or "full-size"
+```
+
+| Layout | Description | Best for |
+|---|---|---|
+| `two-column` (default) | Game window left, setup card right | Card games, table games, detailed bet UIs |
+| `full-size` | Full-width 4:3 window with controls overlaid inside | Slots, arcade, immersive games |
+
+The full-size pattern matches games like **Gimboz of the Galaxy** — controls sit in a bar at the bottom of the game window on desktop, and the setup card moves below the window on mobile. See `MyGameInGameOverlay.tsx` for the starting implementation.
 
 ---
 
