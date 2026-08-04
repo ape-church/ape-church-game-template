@@ -16,6 +16,11 @@ type GameWindowProps = {
     customHeightMobile?: string;
     children: React.ReactNode;
 
+    /** Rendered inside a GameHud stage: the frame, height and aspect belong to
+     *  the HUD, so drop this window's own border/rounding/aspect and fill the
+     *  stage. Only affects lg+ — mobile is untouched. See docs/GAME-HUD.md. */
+    hudMode?: boolean;
+
     betAmount: number | null;
     payout: number | null;
     inReplayMode: boolean;
@@ -44,6 +49,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
     isGameFinished,
     customHeightMobile,
     children,
+    hudMode = false,
 
     betAmount,
     payout,
@@ -128,6 +134,8 @@ const GameWindow: React.FC<GameWindowProps> = ({
         <div
             className={cn(
                 "lg:basis-2/3 w-full h-full rounded-[12px] border-[2.25px] sm:border-[3.75px] lg:border-[4.68px] border-[#2A3640] relative overflow-hidden",
+                // Inside a GameHud stage the frame/height/aspect come from the HUD.
+                hudMode && "lg:basis-auto lg:h-full lg:aspect-auto lg:border-0 lg:rounded-none",
             )}
         >
 

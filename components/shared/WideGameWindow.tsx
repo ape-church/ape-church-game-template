@@ -30,6 +30,9 @@ type WideGameWindowProps = {
 
     /** When true, the game component paints its own background art. */
     skipDefaultBackground?: boolean;
+    /** Rendered inside a GameHud stage: release the fixed 4:3 aspect and the
+     *  window's own frame so it fills the stage. lg+ only. See docs/GAME-HUD.md. */
+    hudMode?: boolean;
     hideAudioControls?: boolean;
     disableBuiltInSong?: boolean;
     onMusicMutedChange?: (muted: boolean) => void;
@@ -56,6 +59,7 @@ const WideGameWindow: React.FC<WideGameWindowProps> = ({
     onRewatch,
     currentGameId,
     skipDefaultBackground = false,
+    hudMode = false,
     hideAudioControls = false,
     disableBuiltInSong = false,
     onMusicMutedChange,
@@ -127,6 +131,8 @@ const WideGameWindow: React.FC<WideGameWindowProps> = ({
             className={cn(
                 "w-full rounded-[12px] border-[2.25px] sm:border-[3.75px] lg:border-[4.68px] border-[#2A3640] relative overflow-hidden",
                 "aspect-4/3 min-h-0",
+                // Inside a GameHud stage the frame/height/aspect come from the HUD.
+                hudMode && "lg:h-full lg:aspect-auto lg:border-0 lg:rounded-none",
             )}
         >
             {isGamePaused && (

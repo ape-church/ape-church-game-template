@@ -16,14 +16,19 @@ import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { Game } from "@/lib/games";
 import { cn } from "@/lib/utils";
+import { HUD_PANEL_CARD_CLASS } from "../shared/GameHud";
 import BetAmountInput from "../shared/BetAmountInput";
 import { CustomSlider } from "../shared/CustomSlider";
 import ChipSelection, { Chip } from "../shared/ChipSelection";
 
 interface MyGameSetupCardProps {
     game: Game;
-    /** "sidebar" = right column on desktop. "standalone" = full-width card (mobile full-size layout). */
-    placement?: "sidebar" | "standalone";
+    /**
+     * "hud"        = docked in the GameHud left panel (preferred layout).
+     * "sidebar"    = legacy right column on desktop.
+     * "standalone" = full-width card (mobile full-size layout / modal).
+     */
+    placement?: "hud" | "sidebar" | "standalone";
     className?: string;
     onPlay: () => void;
     onSpin: () => void;
@@ -61,7 +66,7 @@ const MAX_PROFIT_INFO =
 
 const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
     game,
-    placement = "sidebar",
+    placement = "hud",
     className,
     onPlay,
     onSpin,
@@ -324,6 +329,10 @@ const MyGameSetupCard: React.FC<MyGameSetupCardProps> = ({
             className={cn(
                 "p-6 flex flex-col",
                 placement === "sidebar" && "lg:basis-1/3",
+                // Docked in the HUD panel: the frame owns the chrome on lg+.
+                // Compose extras AFTER the constant so twMerge resolves in your
+                // favour (e.g. cn(..., HUD_PANEL_CARD_CLASS, "lg:gap-3")).
+                placement === "hud" && HUD_PANEL_CARD_CLASS,
                 className,
             )}
         >

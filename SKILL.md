@@ -2,6 +2,8 @@
 
 This file contains instructions for AI agents building games using the Ape Church game template. Read this file in full before writing any code or modifying any files.
 
+Also read [`docs/GAME-HUD.md`](./docs/GAME-HUD.md) before laying out your game. The Game HUD is the platform's standard desktop layout and every new game is built on it — § 4 below summarises it, that document is the full spec.
+
 ---
 
 ## 1. Files You May Edit
@@ -26,8 +28,9 @@ Do not modify any of the following:
 app/page.tsx
 app/globals.css
 app/layout.tsx
-components/shared/           ← all files and subfolders
+components/shared/           ← all files and subfolders (incl. GameHud.tsx, GameHudPage.tsx)
 public/shared/               ← all files and subfolders
+docs/                        ← platform reference docs
 next.config.ts
 tsconfig.json
 package.json
@@ -47,9 +50,9 @@ Your `components/my-game/` folder must contain at minimum:
 
 | File | Purpose |
 |---|---|
-| `MyGame.tsx` | Root game component. Owns all state and exposes all lifecycle functions. |
-| `MyGameWindow.tsx` | Game window wrapper. Child of `GameWindow` from shared. |
-| `MyGameSetupCard.tsx` | Bet configuration UI shown in setup view. |
+| `MyGame.tsx` | Root game component. Owns all state, exposes all lifecycle functions, and renders the `GameHud` frame. |
+| `MyGameWindow.tsx` | Your scene. Child of `GameWindow` from shared; its root must be `absolute inset-0`. |
+| `MyGameSetupCard.tsx` | Bet configuration UI. Docks into the HUD panel — design it for a 300px column. |
 
 Optional files you may add:
 - `myGameConfig.ts` — configuration constants (multipliers, speeds, thresholds, layout mode, etc.)
@@ -60,56 +63,84 @@ Optional files you may add:
 
 ---
 
-## 4. Layout Options
+## 4. Layout — build on the Game HUD
 
-Games can use one of two desktop layout modes. Set this in `myGameConfig.ts`:
+**The Game HUD is the standard desktop layout for Ape Church games and what every new game must target.** Read [`docs/GAME-HUD.md`](./docs/GAME-HUD.md) in full before laying out your game — this section is the summary.
+
+Set the mode in `myGameConfig.ts` (already the default):
 
 ```typescript
-export type GameLayout = "two-column" | "full-size";
-export const myGameLayout: GameLayout = "two-column"; // change to "full-size" if needed
+export type GameLayout = "hud" | "two-column" | "full-size";
+export const myGameLayout: GameLayout = "hud";
 ```
 
-### Two-column (default)
+### HUD (default — use this)
 
-Game window on the left (2/3 width), setup card on the right (1/3 width). Uses shared `GameWindow`.
-
-```
-┌─────────────────────┬──────────┐
-│                     │  Setup   │
-│    Game Window      │   Card   │
-│                     │          │
-└─────────────────────┴──────────┘
-```
-
-Best for: card games, table games, games with detailed bet configuration.
-
-### Full-size
-
-Full-width game window with a fixed 4:3 aspect ratio. Controls are overlaid inside the playfield on desktop. On mobile, the setup card renders below the game window instead.
+One bordered frame with a slim title bar, the setup card docked into a narrow left panel, and a wide game stage taking the rest of the width. The stage is **1139×765** on a 1920px monitor, versus 931×710 under the old two-column layout.
 
 ```
-┌──────────────────────────────────┐
-│                                  │
-│         Game Window              │
-│                                  │
-│  ┌────────────────────────────┐  │
-│  │  Balance | Bets | Actions  │  │  ← overlay controls
-│  └────────────────────────────┘  │
-└──────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ Game Title            [accessory]                        │  ← h-10 title bar
+├───────────────┬──────────────────────────────────────────┤
+│  Setup        │                                          │
+│  Card         │           Game Stage                     │
+│  300 / 340px  │   h = clamp(560px, 100vh-170px, 900px)   │
+│  scrolls      │                                          │
+└───────────────┴──────────────────────────────────────────┘
 ```
 
-Best for: slots, arcade games, immersive games where artwork should fill the frame.
+Wiring, in `MyGame.tsx`:
 
-**Full-size implementation checklist:**
+```tsx
+import GameHud from "@/components/shared/GameHud";
+import GameWindow from "@/components/shared/GameWindow";
 
-1. Set `myGameLayout` to `"full-size"` in `myGameConfig.ts`
-2. Import `WideGameWindow` from `@/components/shared/WideGameWindow` in `MyGame.tsx`
-3. Use `MyGameInGameOverlay.tsx` as a starting point for your in-game control bar
-4. Customize overlay controls in `MyGameInGameOverlay.tsx` (bet presets, action buttons, progress panel)
-5. Keep `MyGameSetupCard` for mobile (`md:hidden`) and the desktop customize modal
-6. If your game paints its own background, pass `skipDefaultBackground` to `WideGameWindow`
+<GameHud
+  title={game.title}
+  panel={<MyGameSetupCard {...setupCardProps} placement="hud" />}
+  // Optional per-game stage constraint — a floor for content-heavy scenes, or
+  // an aspect override for art-locked ones. See docs/GAME-HUD.md § 4.
+  stageClassName="lg:min-h-[600px]"
+>
+  <GameWindow {...gameWindowShellProps} hudMode>
+    <MyGameWindow {...gameProps} />
+  </GameWindow>
+</GameHud>
+```
 
-**Reference:** Gimboz of the Galaxy in the main Ape Church repo uses this pattern.
+Then dock the setup card by putting `HUD_PANEL_CARD_CLASS` on its root:
+
+```tsx
+import { cn } from "@/lib/utils";
+import { HUD_PANEL_CARD_CLASS } from "@/components/shared/GameHud";
+
+<Card className={cn("p-6 flex flex-col", HUD_PANEL_CARD_CLASS)}>
+```
+
+**The five rules that matter:**
+
+1. **No page-level `<h1>`.** `GameHud` owns the title.
+2. **`hudMode` is required** on `GameWindow` / `WideGameWindow` — it drops the window's own border, rounding and aspect so it fills the stage.
+3. **Design the setup card for a 300px column** (340px at `xl`), one `Card` root per view, styled with classes and never inline `style`.
+4. **Use `lg:min-h-full`, never `lg:h-full`,** on the panel card — the panel column is `absolute inset-0 overflow-y-auto` and `h-full` silently clips.
+5. **Everything below `lg` is unchanged.** Every HUD-related class is `lg:`-prefixed. Changing mobile is a bug.
+
+### Sizing your scene for the stage
+
+The stage is **not a fixed shape** — its height comes from the viewport and its width from the container, so it ranges from ~0.9:1 to ~1.9:1. Games that were authored against a square window read as small and lost inside it. Therefore:
+
+- **The scene root is `absolute inset-0`.** No fixed width/height on the outermost scene element.
+- **Size internals relatively** — `%`, container units (`cqw` / `cqh` / `cqmin`), `fr` grids, `aspect-*`.
+- **Never use `vw` / `vh`.** That is the *viewport*, not the stage, and inside the HUD they diverge badly — a 1920px viewport carries a 1139px stage. `vw`-sized elements cap out well under what the stage can hold.
+- **Never use a px value tuned against a square window.** If something must be px, either **cap** it (`w-[min(100cqmin,540px)]`) so it degrades instead of drifting, or **scale** it off the measured stage with a `ResizeObserver`.
+- **Canvas / WebGL observes its container, not `window`** — `ResizeObserver` + `renderer.setSize` + `camera.aspect`, rAF-coalesced and zero-size guarded.
+- **A perspective camera must fit by the constraining axis.** `fov` is vertical, so updating `camera.aspect` alone widens the frustum and reveals more background without making the subject any bigger.
+- **Store interaction hit zones as fractions**, re-projected for aspect if the camera is perspective.
+- **Background art:** author a 2560×1440 (16:9) master with everything important inside the centered 1200×1200 safe square; the flanks are croppable ambience. Full spec in `docs/GAME-HUD.md` § 6.
+
+### Legacy modes
+
+`"two-column"` (window left 2/3, card right 1/3) and `"full-size"` (full-width 4:3 window with controls overlaid inside the playfield, via `WideGameWindow` + `MyGameInGameOverlay.tsx`) still build, so existing games keep working. **Do not pick one for a new game** unless it genuinely cannot work in the HUD frame — and if so, say why in your submission.
 
 ---
 
@@ -180,6 +211,7 @@ const [isAnimating, setIsAnimating] = useState(false)
 Import shared components using absolute paths. Do not copy them into your game folder.
 
 ```typescript
+import GameHud, { HUD_PANEL_CARD_CLASS } from '@/components/shared/GameHud'
 import GameWindow from '@/components/shared/GameWindow'
 import WideGameWindow from '@/components/shared/WideGameWindow'
 import GameResultsModal from '@/components/shared/GameResultsModal'
@@ -316,6 +348,16 @@ Verify every item before considering the build complete. Do not submit until all
 - [ ] `handleRewatch()` replays the previous result without any new transaction
 - [ ] `handleStateAdvance()` works correctly if the game uses multi-step progression
 - [ ] Game renders correctly in default state (before any bet is placed)
+
+**Layout (see `docs/GAME-HUD.md`)**
+- [ ] `myGameLayout` is `"hud"` (or the submission explains why it can't be)
+- [ ] No page-level `<h1>` — `GameHud` owns the title
+- [ ] `hudMode` passed to `GameWindow` / `WideGameWindow`
+- [ ] Setup card root carries `HUD_PANEL_CARD_CLASS`, uses `lg:min-h-full` (never `lg:h-full`), and every per-view root gets the treatment
+- [ ] Scene root is `absolute inset-0`; no `vw`/`vh` sizing and no px values tuned to a square window
+- [ ] Canvas / WebGL observes its container with a `ResizeObserver`, not `window`
+- [ ] Verified from 1280px to 2560px wide and from a short laptop window to full height — no clipping or letterboxing
+- [ ] Below `lg` is unchanged: every HUD-related class is `lg:`-prefixed
 
 **Code quality**
 - [ ] No edits to any file outside `components/my-game/`, `public/my-game/`, and `metadata.json`

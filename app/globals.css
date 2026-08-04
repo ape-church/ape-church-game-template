@@ -73,6 +73,24 @@
   --sidebar-border: oklch(0.22 0.0143 239.37);
 
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* GAME HUD STAGE (docs/GAME-HUD.md)
+     The three figures behind GameHud's stage height. Tuned here rather than in
+     the component because the offset is DERIVED from the chrome stacked above
+     the frame and has to move with it.
+
+     --game-hud-stage-offset = platform NavTop (80)
+                             + GameHudPage's reclaimed top padding (24)
+                             + the frame's top border (3)
+                             + the HUD title bar (40) + its rule (1)
+                             + ~20 so the frame clears the fold.
+
+     These match the live platform values, so the stage you develop against in
+     this template is the stage players get. Do not retune them per game — use
+     GameHud's `stageClassName` for a per-game floor or aspect override. */
+  --game-hud-stage-offset: 170px;
+  --game-hud-stage-min: 560px;
+  --game-hud-stage-max: 900px;
 }
 
 @theme inline {

@@ -27,6 +27,8 @@ app/
   page.tsx                        # DO NOT EDIT
 components/
   shared/                         # DO NOT EDIT — platform components, import freely
+    GameHud.tsx                   # The standard game frame (title bar + panel + stage)
+    GameHudPage.tsx               # Page shell for a HUD game
     GameWindow.tsx
     WideGameWindow.tsx
     GameResultsModal.tsx
@@ -38,9 +40,11 @@ components/
     MyGame.tsx
     MyGameWindow.tsx
     MyGameSetupCard.tsx
-    MyGameInGameOverlay.tsx       # Full-size layout — in-game control bar
+    MyGameInGameOverlay.tsx       # Legacy full-size layout — in-game control bar
     myGameConfig.ts               # Optional — game configuration constants
     my-game.styles.css            # Optional — game-scoped styles
+docs/
+  GAME-HUD.md                     # READ THIS — the standard game layout spec
 public/
   shared/                         # DO NOT EDIT — shared platform assets
   my-game/                        # YOUR ASSETS — all game assets go here
@@ -76,20 +80,55 @@ Track state using `currentView`:
 
 ---
 
-## Layout Options
+## Layout — the Game HUD
 
-Games support two layout modes, configured in `myGameConfig.ts`:
+**The Game HUD is the standard desktop layout for Ape Church games, and what new games should be built on.** Full spec: **[`docs/GAME-HUD.md`](./docs/GAME-HUD.md)** — read it before laying out your game.
 
-```typescript
-export const myGameLayout: GameLayout = "two-column"; // or "full-size"
+It is one bordered frame: a slim title bar, your setup card docked into a narrow left panel, and a wide game stage taking the rest of the width.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ Game Title                                               │  ← title bar
+├───────────────┬──────────────────────────────────────────┤
+│  Setup        │                                          │
+│  Card         │           Game Stage                     │
+│  300 / 340px  │   h = clamp(560px, 100vh-170px, 900px)   │
+└───────────────┴──────────────────────────────────────────┘
 ```
 
-| Layout | Description | Best for |
-|---|---|---|
-| `two-column` (default) | Game window left, setup card right | Card games, table games, detailed bet UIs |
-| `full-size` | Full-width 4:3 window with controls overlaid inside | Slots, arcade, immersive games |
+That is a **1139×765** stage on a 1920px monitor, against 931×710 under the old two-column layout — the point of the HUD is that the game gets the space, not the chrome.
 
-The full-size pattern matches games like **Gimboz of the Galaxy** — controls sit in a bar at the bottom of the game window on desktop, and the setup card moves below the window on mobile. See `MyGameInGameOverlay.tsx` for the starting implementation.
+Configured in `myGameConfig.ts`:
+
+```typescript
+export const myGameLayout: GameLayout = "hud"; // default
+```
+
+```tsx
+<GameHud
+  title={game.title}
+  panel={<MyGameSetupCard {...setupCardProps} placement="hud" />}
+>
+  <GameWindow {...gameWindowShellProps} hudMode>
+    <MyGameWindow {...gameProps} />
+  </GameWindow>
+</GameHud>
+```
+
+**What this means for your game:**
+
+- No page-level `<h1>` — the HUD owns the title.
+- Pass `hudMode` to `GameWindow` / `WideGameWindow` so it fills the stage instead of drawing its own frame.
+- Put `HUD_PANEL_CARD_CLASS` on your setup card's root, and design that card for a **300px** column (340px at `xl`).
+- The stage is **not a fixed shape** — it ranges from ~0.9:1 to ~1.9:1. Size your scene relatively (`%`, `cqw`/`cqh`/`cqmin`, `fr`, `aspect-*`). **Never `vw`/`vh`** — that's the viewport, not the stage, and they diverge badly inside the HUD.
+- Canvas/WebGL games: observe the **container** with a `ResizeObserver`, not `window`, and make a perspective camera fit by the constraining axis (`fov` is vertical — widening the stage otherwise just reveals more background).
+- Below `lg` nothing changes: the classic stacked mobile layout is untouched, and every HUD class is `lg:`-prefixed.
+
+Background art should be a **2560×1440 (16:9) master with everything important inside the centered 1200×1200 safe square** — the old 719×719 squares upscale ~1.6× and lose a third of their height to the crop. Full designer spec in `docs/GAME-HUD.md` § 6.
+
+### Legacy layouts
+
+`two-column` (window left, card right) and `full-size` (full-width 4:3 window with controls overlaid inside the playfield — see `MyGameInGameOverlay.tsx`) still build so existing games keep working. Don't choose one for a new game unless it genuinely cannot work in the HUD frame.
 
 ---
 
@@ -275,7 +314,9 @@ submissions/your-team-name/your-game-name/metadata.json
 - [ ] All `address` fields are valid ERC-20 addresses
 - [ ] No TypeScript errors (`npx tsc --noEmit`)
 - [ ] No console errors in browser
-- [ ] Tested on different screen sizes
+- [ ] Built on the HUD layout — see the layout checklist in `SKILL.md` § 13
+- [ ] Tested from 1280px to 2560px wide and from a short laptop window to full height
+- [ ] Mobile (`< lg`) unchanged and tested
 
 ---
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getPayout, randomBytes, Game } from "@/lib/games";
 import GameWindow from "@/components/shared/GameWindow";
 import WideGameWindow from "@/components/shared/WideGameWindow";
+import GameHud from "@/components/shared/GameHud";
 import MyGameWindow from "./MyGameWindow";
 import MyGameSetupCard from "./MyGameSetupCard";
 import MyGameInGameOverlay from "./MyGameInGameOverlay";
@@ -20,6 +21,7 @@ interface MyGameComponentProps {
 
 const MyGameComponent: React.FC<MyGameComponentProps> = ({ game: gameProp }) => {
     const game = gameProp ?? myGame;
+    const isHudLayout = myGameLayout === "hud";
     const isFullSizeLayout = myGameLayout === "full-size";
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -302,6 +304,32 @@ const MyGameComponent: React.FC<MyGameComponentProps> = ({ game: gameProp }) => 
         isGamePaused: false,
         resultModalDelayMs: 1000,
     };
+
+    // PREFERRED LAYOUT — the unified game HUD (docs/GAME-HUD.md).
+    // GameHud is the two-column wrapper now: the setup card goes in `panel`,
+    // the window goes in `children` with `hudMode`. Anything that used to sit
+    // below the game (history, rules) stays OUTSIDE the frame.
+    if (isHudLayout) {
+        return (
+            <div>
+                <GameHud
+                    title={game.title}
+                    panel={<MyGameSetupCard {...setupCardProps} placement="hud" />}
+                    // Optional per-game stage constraint. A content-heavy scene can
+                    // set a floor (`lg:min-h-[600px]`); art authored at a fixed
+                    // aspect overrides the height entirely
+                    // (`lg:h-auto lg:aspect-[4/3] lg:max-h-[860px]`).
+                    stageClassName={undefined}
+                >
+                    <GameWindow {...gameWindowShellProps} hudMode>
+                        {gameWindowContent}
+                    </GameWindow>
+                </GameHud>
+
+                {/* Game history / rules sections go here — outside the frame. */}
+            </div>
+        );
+    }
 
     if (isFullSizeLayout) {
         return (

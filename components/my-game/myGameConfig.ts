@@ -1,17 +1,25 @@
 import { Game } from "@/lib/games";
 
 /**
- * Layout mode for this game.
+ * Layout mode for this game. See docs/GAME-HUD.md.
  *
- * - "two-column" (default): Game window on the left, setup card on the right (desktop).
- * - "full-size": Full-width game window with controls overlaid inside the playfield.
- *   On mobile, the setup card renders below the game window instead.
+ * - "hud" (DEFAULT — use this): the unified game HUD. One bordered frame with a
+ *   slim title bar, the setup card docked in a narrow left panel, and a wide
+ *   game stage taking the rest of the width. This is the platform's standard
+ *   desktop layout and what new games should target.
+ * - "two-column" (legacy): game window left (2/3), setup card right (1/3).
+ * - "full-size" (legacy): full-width 4:3 window with controls overlaid inside
+ *   the playfield; setup card drops below the window on mobile.
  *
- * Reference: Gimboz of the Galaxy uses the full-size pattern.
+ * The legacy modes are kept so existing games keep building. Only pick one of
+ * them if your game genuinely cannot work in the HUD frame, and say why in your
+ * submission.
+ *
+ * Below `lg` all three modes render the same classic stacked layout.
  */
-export type GameLayout = "two-column" | "full-size";
+export type GameLayout = "hud" | "two-column" | "full-size";
 
-export const myGameLayout: GameLayout = "full-size";
+export const myGameLayout: GameLayout = "hud";
 
 export const myGame: Game = {
     title: "My Game",
