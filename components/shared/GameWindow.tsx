@@ -20,6 +20,15 @@ type GameWindowProps = {
      *  the HUD, so drop this window's own border/rounding/aspect and fill the
      *  stage. Only affects lg+ — mobile is untouched. See docs/GAME-HUD.md. */
     hudMode?: boolean;
+    /**
+     * HUD-only background suppression: keep the artwork on mobile, but drop
+     * it at `lg` so the game sits on the HUD's flat dark stage instead.
+     *
+     * The 719x719 square backgrounds get upscaled and cropped by the wide HUD
+     * stage, so for a game whose scene reads better on a clean fill than on
+     * stretched art, this is the switch. Mobile is untouched.
+     */
+    hudSolidBackground?: boolean;
 
     betAmount: number | null;
     payout: number | null;
@@ -50,6 +59,7 @@ const GameWindow: React.FC<GameWindowProps> = ({
     customHeightMobile,
     children,
     hudMode = false,
+    hudSolidBackground = false,
 
     betAmount,
     payout,
@@ -181,30 +191,32 @@ const GameWindow: React.FC<GameWindowProps> = ({
                     />
                 )}
 
-            {game.animatedBackground && game.animatedBackground !== "" ? (
-                <video
-                    src={game.animatedBackground}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    controls={false}
-                    disablePictureInPicture={true}
-                    className="w-full h-full object-cover rounded-[8px] pointer-events-none"
-                />
-            ) : (
-                <Image
-                    src={game.gameBackground}
-                    alt="Game Background"
-                    width={719}
-                    height={719}
-                    className="w-full h-full object-cover rounded-[8px] opacity-75"
-                    style={{
-                        minHeight: customHeightMobile ? customHeightMobile : "100%",
-                    }}
-                    priority
-                />
-            )}
+            <div className={cn("contents", hudSolidBackground && "lg:hidden")}>
+                {game.animatedBackground && game.animatedBackground !== "" ? (
+                    <video
+                        src={game.animatedBackground}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        controls={false}
+                        disablePictureInPicture={true}
+                        className="w-full h-full object-cover rounded-[8px] pointer-events-none"
+                    />
+                ) : (
+                    <Image
+                        src={game.gameBackground}
+                        alt="Game Background"
+                        width={719}
+                        height={719}
+                        className="w-full h-full object-cover rounded-[8px] opacity-75"
+                        style={{
+                            minHeight: customHeightMobile ? customHeightMobile : "100%",
+                        }}
+                        priority
+                    />
+                )}
+            </div>
 
             {children}
 

@@ -16,10 +16,13 @@ import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { Game } from "@/lib/games";
 import { cn } from "@/lib/utils";
-import { HUD_PANEL_CARD_CLASS } from "../shared/GameHud";
-import BetAmountInput from "../shared/BetAmountInput";
-import { CustomSlider } from "../shared/CustomSlider";
-import ChipSelection, { Chip } from "../shared/ChipSelection";
+// Always import shared components via the @/ alias, never a relative path —
+// on submission your folder moves to components/games/<your-game>/ and a
+// "../shared/…" import would no longer resolve. See SKILL.md § 7.
+import { HUD_PANEL_CARD_CLASS } from "@/components/shared/GameHud";
+import BetAmountInput from "@/components/shared/BetAmountInput";
+import { CustomSlider } from "@/components/shared/CustomSlider";
+import ChipSelection, { Chip } from "@/components/shared/ChipSelection";
 
 interface MyGameSetupCardProps {
     game: Game;

@@ -72,9 +72,15 @@ const GameHud: React.FC<GameHudProps> = ({
     return (
         <div className="w-full lg:overflow-hidden lg:rounded-[12px] lg:border-[3px] lg:border-[#2A3640] lg:bg-[#12181C]">
             {/* Title bar: mobile keeps the classic page-title row; desktop gets a
-                slim in-frame bar, reclaiming the vertical space the h1 used to eat. */}
+                slim in-frame bar, reclaiming the vertical space the h1 used to eat.
+
+                flex-wrap + gap-y matter below lg only: a game with more than one
+                accessory overflowed a 390px screen instead of dropping to a
+                second line. row-gap is inert until something wraps, so
+                single-accessory games are unchanged. The lg bar is a
+                fixed-height strip and never wraps. */}
             {!isMiniEmbed && (
-                <div className="mb-2 flex flex-row items-center sm:mb-4 lg:mb-0 lg:h-10 lg:border-b lg:border-[#2A3640] lg:px-5">
+                <div className="mb-2 flex flex-row flex-wrap items-center gap-y-2 sm:mb-4 lg:mb-0 lg:h-10 lg:flex-nowrap lg:gap-y-0 lg:border-b lg:border-[#2A3640] lg:px-5">
                     <h1 className="mr-2 text-3xl font-semibold lg:text-lg">{title}</h1>
                     {accessory}
                 </div>
