@@ -1,0 +1,133 @@
+/* Table kit reference: the box fills the frame's stage; the design-px stage inside is scaled from its top left. */
+
+.box {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0a0f12;
+  color: #e8eef1;
+}
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: top left;
+  overflow: hidden;
+}
+
+/* The room: code-drawn here. A real game paints it (art placed from the layout, see docs/FULL-SCREEN.md). */
+.room {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 48%, rgba(46, 120, 74, 0.95), rgba(14, 44, 30, 0.98) 70%, #070d0a 100%),
+    #070d0a;
+}
+
+.table {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.die {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18%;
+  background: linear-gradient(160deg, #ffffff, #d8e2e6);
+  color: #0d1418;
+  font-weight: 900;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.dieRolling {
+  animation: tumble 360ms linear infinite;
+}
+@keyframes tumble {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.zones {
+  display: flex;
+}
+.zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15em;
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.18);
+  color: #f2f6f8;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+.zone:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(140, 255, 0, 0.7);
+}
+.zone:disabled {
+  cursor: default;
+}
+.zone b {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.zone small {
+  font-size: 0.55em;
+  opacity: 0.8;
+}
+.zone em {
+  font-style: normal;
+  font-size: 0.5em;
+  font-weight: 800;
+  color: #8cff00;
+}
+.zoneHit {
+  border-color: #8cff00;
+  box-shadow: 0 0 30px rgba(140, 255, 0, 0.45);
+}
+
+/* the stake on a zone: the selected chip's art with the amount on it */
+.stack {
+  position: absolute;
+  right: 10%;
+  bottom: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.6));
+}
+.stack i {
+  font-style: normal;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 3px #000;
+}
+
+.result {
+  font-weight: 800;
+}
+.win {
+  color: #8cff00;
+  text-shadow: 0 0 16px rgba(140, 255, 0, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dieRolling {
+    animation: none;
+  }
+}

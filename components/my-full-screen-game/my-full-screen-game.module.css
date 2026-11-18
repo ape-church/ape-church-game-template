@@ -1,0 +1,131 @@
+/* Game-scoped styles for the full-screen example. CSS modules keep them from leaking into the platform. */
+
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* The background runs under the console too: the console art sits on top of the room, not in a box below it. */
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: 50% 35%;
+}
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(8, 12, 16, 0.15), rgba(8, 12, 16, 0.75) 75%),
+    linear-gradient(to bottom, rgba(8, 12, 16, 0.2), rgba(8, 12, 16, 0.6));
+}
+
+/* The playable area between the corner pills and the console (sized from L in the scene). */
+.area {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.7);
+  line-height: 1;
+}
+
+.machine {
+  display: flex;
+  background: linear-gradient(180deg, rgba(20, 28, 34, 0.92), rgba(10, 14, 18, 0.95));
+  border: 2px solid rgba(182, 255, 59, 0.35);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+.machineWin {
+  border-color: rgba(182, 255, 59, 0.95);
+  box-shadow:
+    0 0 48px rgba(182, 255, 59, 0.45),
+    0 18px 60px rgba(0, 0, 0, 0.6);
+}
+
+.reel {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #26323b, #10161b 75%);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.8);
+}
+
+.strip {
+  display: flex;
+  flex-direction: column;
+  animation: reelSpin 420ms linear infinite;
+  filter: blur(2px);
+}
+@keyframes reelSpin {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tileLanded {
+  animation: land 220ms cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+@keyframes land {
+  from {
+    transform: translateY(-14%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.win {
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #b6ff3b;
+  text-shadow: 0 0 18px rgba(182, 255, 59, 0.6);
+  animation: pop 320ms cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip,
+  .tileLanded,
+  .win {
+    animation: none;
+  }
+}

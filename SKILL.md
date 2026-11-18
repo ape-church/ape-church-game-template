@@ -2,7 +2,9 @@
 
 This file contains instructions for AI agents building games using the Ape Church game template. Read this file in full before writing any code or modifying any files.
 
-Also read [`docs/GAME-HUD.md`](./docs/GAME-HUD.md) before laying out your game. The Game HUD is the platform's standard desktop layout and every new game is built on it — § 4 below summarises it, that document is the full spec.
+Also read [`docs/FULL-SCREEN.md`](./docs/FULL-SCREEN.md) before laying out your game. **Full screen is the preferred layout for new games**: § 4 below summarises it, that document is the full spec. The HUD layout ([`docs/GAME-HUD.md`](./docs/GAME-HUD.md), setup card beside the stage) is the supported alternative.
+
+The template ships two example games with the same logic: `components/my-full-screen-game/` (full screen, `/full-screen`, plus a table-console reference at `/full-screen/table`) and `components/my-game/` (HUD, `/`). Build from one and delete the other.
 
 ---
 
@@ -11,12 +13,12 @@ Also read [`docs/GAME-HUD.md`](./docs/GAME-HUD.md) before laying out your game. 
 Only touch files in these locations:
 
 ```
-components/my-game/          ← all game components go here
-public/my-game/              ← all game assets go here
-metadata.json                ← fill out before submitting
+components/my-full-screen-game/   ← full-screen game components (or components/my-game/ for the HUD)
+public/my-full-screen-game/       ← full-screen game assets (or public/my-game/ for the HUD)
+metadata.json                     ← fill out before submitting
 ```
 
-Rename `my-game` to your game's name in kebab-case throughout (e.g. `chicken-crossing`, `slot-machine`). This rename must be consistent across `components/`, `public/`, and `metadata.json`.
+Rename your example folder to your game's name in kebab-case throughout (e.g. `chicken-crossing`, `slot-machine`). This rename must be consistent across `components/`, `public/`, and `metadata.json`.
 
 ---
 
@@ -26,9 +28,10 @@ Do not modify any of the following:
 
 ```
 app/page.tsx
+app/full-screen/             ← the full-screen example pages
 app/globals.css
 app/layout.tsx
-components/shared/           ← all files and subfolders (incl. GameHud.tsx, GameHudPage.tsx)
+components/shared/           ← all files and subfolders (incl. immersive/, GameHud.tsx, GameHudPage.tsx)
 public/shared/               ← all files and subfolders
 docs/                        ← platform reference docs
 next.config.ts
@@ -46,7 +49,18 @@ These are platform-managed files. Editing them will cause integration failures.
 
 ## 3. Required Component Files
 
-Your `components/my-game/` folder must contain at minimum:
+**Full screen** (`components/my-full-screen-game/`), at minimum:
+
+| File | Purpose |
+|---|---|
+| `MyFullScreenGame.tsx` | Root game component. Owns all state, exposes all lifecycle functions, renders `ImmersiveGameFrame` > `ImmersiveGameWindow` > the stage. |
+| `MyFullScreenGameScene.tsx` | Your scene. Fills the stage; lays itself out from the stage layout `L`. |
+| `stage/MyFullScreenGameStage.tsx` | Maps your state onto the console (`KitSlotStage` + `SlotConsoleData`), or builds your own console from the kit parts. Replaces the setup card. |
+| `myFullScreenGameConfig.ts` | Payouts, limits and your console skin (`KitSkin`). |
+
+For `metadata.json` on a full-screen game: `mainComponent` = the root, `windowComponent` = the scene, `setupComponent` = the stage file.
+
+**HUD** (`components/my-game/`), at minimum:
 
 | File | Purpose |
 |---|---|
@@ -63,9 +77,24 @@ Optional files you may add:
 
 ---
 
-## 4. Layout — build on the Game HUD
+## 4. Layout
 
-**The Game HUD is the standard desktop layout for Ape Church games and what every new game must target.** Read [`docs/GAME-HUD.md`](./docs/GAME-HUD.md) in full before laying out your game — this section is the summary.
+### Full screen (preferred for new games)
+
+Read [`docs/FULL-SCREEN.md`](./docs/FULL-SCREEN.md) in full before laying out a full-screen game. Summary:
+
+- The page imports `@/components/shared/immersive/immersive.css` and renders `ImmersiveGameFrame` (stage one viewport tall, history passed as `below`) > `ImmersiveGameWindow` (music, overlays, results modal) > your stage.
+- **Slot-style games:** `KitSlotStage` with `scene={(L) => ...}` and `console={SlotConsoleData}`. The kit builds the desktop console and the phone console. Map `currentView` 0 / 1 / 2 onto the console's views.
+- **Table-style games:** build the console from `KitConsoleBar` (desk) / `KitConsolePanel` (phone), `KitPlate`, `KitChipRack`, `KitRoundButton`, `KitBigButton`, `KitCorners`, inside a design-px stage you fit to the box (see `table-kit-reference/`).
+- **The scene fills the stage** and keeps gameplay between `L.top` and `L.h - L.bottom`. Size from `L`, **never `vw` / `vh`**, and never remount the scene on a desk / phone flip.
+- The big button's `busy` shows a purchase in flight; don't grey the stage for your own purchase.
+- GP only via `KitGpSwitch` on the balance plate (`useGpPayment`, `gpPlates`). Bets stay APE in state.
+- Corner pills: the frame gives Menu, Games, History and Full screen; add yours (paytable, sound, music) with `KitPill`.
+- Console look: a `KitSkin` in your config via `<KitSkinProvider>`. Never edit `kitArt.ts` or `public/shared/kit/`.
+
+### HUD (alternative)
+
+Read [`docs/GAME-HUD.md`](./docs/GAME-HUD.md) in full before laying out a HUD game. This section is the summary.
 
 Set the mode in `myGameConfig.ts` (already the default):
 
@@ -218,6 +247,17 @@ import GameResultsModal from '@/components/shared/GameResultsModal'
 import BetAmountInput from '@/components/shared/BetAmountInput'
 import CustomSlider from '@/components/shared/CustomSlider'
 import ChipSelection from '@/components/shared/ChipSelection'
+
+// full screen
+import ImmersiveGameFrame from '@/components/shared/immersive/ImmersiveGameFrame'
+import ImmersiveGameWindow from '@/components/shared/immersive/ImmersiveGameWindow'
+import { useImmersiveFrameControls } from '@/components/shared/immersive/frameControls'
+import KitSlotStage from '@/components/shared/immersive/kit/SlotConsole'
+import { KitPlate, KitChipRack, KitBigButton, KitPill } from '@/components/shared/immersive/kit/ChromeKit'
+import { KitSkinProvider } from '@/components/shared/immersive/kit/skin'
+import KitGpSwitch from '@/components/shared/immersive/kit/GpSwitch'
+import { useGpPayment, gpPlates } from '@/components/shared/immersive/kit/useGpPayment'
+import { usePlatformPrefs } from '@/components/shared/immersive/platform'
 ```
 
 Never use relative paths to reference shared components:
@@ -349,7 +389,14 @@ Verify every item before considering the build complete. Do not submit until all
 - [ ] `handleStateAdvance()` works correctly if the game uses multi-step progression
 - [ ] Game renders correctly in default state (before any bet is placed)
 
-**Layout (see `docs/GAME-HUD.md`)**
+**Layout, full screen (see `docs/FULL-SCREEN.md` § 10)**
+- [ ] `ImmersiveGameFrame` > `ImmersiveGameWindow` > stage; history passed as `below`
+- [ ] Console covers views 0, 1, 2 on desk and phone; scene keeps clear of `L.top` / `L.bottom`
+- [ ] No `vw` / `vh`; scene survives a desk / phone flip without remounting
+- [ ] GP only on the balance plate; bets stay APE in state
+- [ ] Tested at 1280x720 to 2560x1080 ultrawide, a 390x844 phone, and browser full screen
+
+**Layout, HUD (see `docs/GAME-HUD.md`)**
 - [ ] `myGameLayout` is `"hud"` (or the submission explains why it can't be)
 - [ ] No page-level `<h1>` — `GameHud` owns the title
 - [ ] `hudMode` passed to `GameWindow` / `WideGameWindow`
@@ -360,7 +407,7 @@ Verify every item before considering the build complete. Do not submit until all
 - [ ] Below `lg` is unchanged: every HUD-related class is `lg:`-prefixed
 
 **Code quality**
-- [ ] No edits to any file outside `components/my-game/`, `public/my-game/`, and `metadata.json`
+- [ ] No edits to any file outside your game folder in `components/`, its folder in `public/`, and `metadata.json`
 - [ ] No TypeScript errors — run `npx tsc --noEmit` to confirm
 - [ ] No console errors in browser
 - [ ] All shared components imported via `@/components/shared/...`

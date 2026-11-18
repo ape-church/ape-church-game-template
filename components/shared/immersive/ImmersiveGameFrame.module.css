@@ -1,0 +1,79 @@
+.frame {
+  width: 100%;
+}
+
+/* One viewport under NavTop, never shorter than the game's floor. */
+.stage {
+  --stage-h: max(calc(100svh - var(--immersive-nav-h, 80px)), var(--stage-min-desk, 480px));
+  position: relative;
+  height: var(--stage-h);
+  overflow: hidden;
+  background: #0b1013;
+  display: flex;
+  justify-content: center;
+  scroll-margin-top: var(--immersive-nav-h, 80px);
+}
+@media (max-width: 767px) {
+  .stage {
+    --stage-h: max(calc(100svh - var(--immersive-nav-h, 80px)), var(--stage-min-phone, 440px));
+  }
+}
+
+/* Ultrawide: the game holds its widest aspect; the pillars continue the room. */
+.stageInner {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  max-width: calc(var(--stage-h) * var(--stage-max-aspect, 2.4));
+  z-index: 1;
+}
+.pillars {
+  position: absolute;
+  inset: -40px;
+  background-size: cover;
+  background-position: 50% 30%;
+  filter: blur(26px) brightness(0.42) saturate(0.85);
+  pointer-events: none;
+  z-index: 0;
+}
+/* A soft falloff where the game meets the pillars (only visible when they show). */
+.stageInner::before,
+.stageInner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 48px;
+  pointer-events: none;
+  z-index: 50;
+}
+.stageInner::before {
+  right: 100%;
+  background: linear-gradient(to left, rgba(5, 8, 10, 0.75), transparent);
+}
+.stageInner::after {
+  left: 100%;
+  background: linear-gradient(to right, rgba(5, 8, 10, 0.75), transparent);
+}
+
+.below {
+  width: 100%;
+  max-width: 1536px;
+  margin: 0 auto;
+  padding: 40px 16px 96px;
+  scroll-margin-top: calc(var(--immersive-nav-h, 80px) + 16px);
+}
+@media (min-width: 1024px) {
+  .below {
+    padding: 56px 48px 128px;
+  }
+}
+
+/* Behind the slid-out sidebar (z 70), above NavTop (z 50). */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: rgba(4, 7, 9, 0.55);
+  backdrop-filter: blur(2px);
+}

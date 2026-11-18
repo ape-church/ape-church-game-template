@@ -1,0 +1,152 @@
+/* KitSlotStage (SlotConsole.tsx). Sizes come from the component in design px; colours are the skin's
+   custom properties (--kit-*, skin.tsx) with the chrome values as fallbacks, like ChromeKit.module.css. */
+
+.box { position: absolute; inset: 0; overflow: hidden; }
+.layer { position: absolute; inset: 0; }
+
+/* the console, laid out in design px and fitted to the stage with one scale */
+.consoleLayer { position: absolute; left: 0; bottom: 0; transform-origin: left bottom; z-index: 20; }
+.zone { position: relative; height: 100%; display: flex; align-items: center; min-width: 0; }
+.actions { display: flex; flex-direction: column; gap: 8px; }
+.control { display: flex; align-items: center; min-width: 0; }
+
+/* the editable bet plate (the kit's plate look, with an input) */
+.betPlate { position: relative; flex-shrink: 0; min-width: 0; }
+/* left-aligned like every other plate value; the input is sized to its text (width in ch, tabular digits) so the
+   unit follows it */
+.betRow { display: flex; align-items: baseline; justify-content: flex-start; gap: 0.2em; }
+.input {
+  flex: 0 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.input:focus { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.unit {
+  flex: 0 0 auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.55em;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--kit-label, #8a979e);
+  cursor: pointer;
+}
+.unit:hover:not(:disabled) { color: var(--kit-accent, #8cff00); }
+.unit:disabled { cursor: default; }
+.caption {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 5px;
+  white-space: nowrap;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--kit-label, #8a979e);
+  pointer-events: none;
+}
+.roundText { font-weight: 900; line-height: 1; color: var(--kit-icon, #eef3f5); }
+
+/* the big button and the caption under it */
+.bigWrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.bigCaption {
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--kit-value, #f2f6f8);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+.dim { opacity: 0.55; }
+
+/* phone panel content: the info line, then the controls beside the big button */
+.phoneBody { height: 100%; display: flex; flex-direction: column; gap: 6px; }
+.phoneRow { display: flex; align-items: center; gap: 8px; padding: 0 2px; }
+.phoneCol { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.strip { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 6px; flex-shrink: 0; }
+.stripItems { display: flex; align-items: baseline; gap: 14px; min-width: 0; overflow: hidden; white-space: nowrap; }
+.stripItem { display: inline-flex; align-items: baseline; gap: 0.45em; min-width: 0; font-size: 12.5px; }
+.stripItem em { font-style: normal; font-size: 0.72em; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--kit-label, #8a979e); }
+.stripItem b { font-weight: 900; color: var(--kit-value, #f2f6f8); }
+.stripItem small { margin-left: 0.3em; font-size: 0.72em; font-weight: 800; color: var(--kit-label, #8a979e); }
+.strip_accent em { color: var(--kit-accent, #8cff00); }
+.strip_win b { color: var(--kit-win, #8cff00); }
+.strip_bad b { color: var(--kit-bad, #ff7b84); }
+.stripIcon { display: inline-flex; vertical-align: -0.15em; margin-right: 0.3em; }
+.stripIcon img { width: 1.15em; height: 1.15em; object-fit: contain; }
+.stripRight { flex-shrink: 0; display: flex; align-items: center; }
+
+/* 3-slice pill buttons (art from the skin; a CSS pill when the skin has none) */
+.pillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: inherit;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--kit-pill-text, #e8eef1);
+  background-color: transparent;
+  cursor: pointer;
+  transition: transform 0.12s, opacity 0.2s;
+}
+.pillBtn:hover:not(:disabled) { transform: translateY(-2px); }
+.pillBtn:disabled { opacity: 0.45; cursor: default; }
+.pillBtn.pillOn:not(.pillCss) { color: var(--kit-pill-text-on, var(--kit-pill-text, #e8eef1)); }
+.pillCss.pillOn { border-color: var(--kit-accent, #8cff00); color: var(--kit-accent, #8cff00); }
+.pillBtn:focus { outline: none; }
+.pillBtn:focus-visible { outline: none; filter: drop-shadow(0 0 6px var(--kit-accent, #8cff00)); }
+
+/* the auto-spin toggle's repeat icon: turns while auto is on */
+.autoIcon { display: inline-flex; flex: none; }
+.autoIcon svg { width: 100%; height: 100%; }
+.autoIconOn { animation: slotBigSpin 1.6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .autoIconOn { animation: none; } }
+
+/* the big button while a purchase waits for its randomness: its art turns in place (no stage overlay) while the
+   label stays still and readable (it used to spin the whole button, text included) */
+.spinning { pointer-events: none; }
+@keyframes slotBigSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .spinning { animation: slotBigPulse 1.2s ease-in-out infinite; }
+  @keyframes slotBigPulse { 50% { opacity: 0.6; } }
+}
+
+/* touch hit areas (mobile pass; see ChromeKit.module.css): the pill buttons, and the APE / USD toggle, whose area
+   runs from its text over the empty right of the bet plate, the plate's full height (static button, so the area
+   hangs off the plate and isn't clipped by the value line) */
+@media (pointer: coarse) {
+  [data-kit-hit] .pillBtn { position: relative; }
+  [data-kit-hit] .pillBtn::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100%, min(calc(44px / var(--kit-k, 1)), calc(100% + var(--kit-hit-x, 100px))));
+    height: max(100%, min(calc(44px / var(--kit-k, 1)), calc(100% + var(--kit-hit-y, 100px))));
+  }
+  /* a stack of pill buttons (the desk console's Rewatch over Change bet): the top one's area grows upward and the bottom
+     one's downward from the middle of the gap between them (--kit-hit-gap), so both reach full size without overlap */
+  [data-kit-hit] [data-kit-hit-stack] > .pillBtn:first-child::before { top: auto; bottom: calc(var(--kit-hit-gap, 0px) / -2); transform: translateX(-50%); height: max(100%, calc(44px / var(--kit-k, 1))); }
+  [data-kit-hit] [data-kit-hit-stack] > .pillBtn:last-child::before { top: calc(var(--kit-hit-gap, 0px) / -2); transform: translateX(-50%); height: max(100%, calc(44px / var(--kit-k, 1))); }
+  [data-kit-hit] [data-kit-hit-stack] > .pillBtn:only-child::before { top: 50%; bottom: auto; transform: translate(-50%, -50%); }
+  [data-kit-hit] .unit:not(:disabled)::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    bottom: -12px;
+    width: calc(44px / var(--kit-k, 1));
+  }
+}

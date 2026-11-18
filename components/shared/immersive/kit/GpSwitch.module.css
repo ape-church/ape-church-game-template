@@ -1,0 +1,45 @@
+/* APE | GP switch on a console readout. Deliberately colourless (white on a dark glass track) so it sits on any
+   game's skin without fighting it; the selected side is a light chip, the other side is muted. */
+.gpSwitch {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 999px;
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.45);
+  font-family: inherit;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  cursor: pointer;
+}
+/* a comfortable touch target around the small switch */
+.gpSwitch::after {
+  content: "";
+  position: absolute;
+  inset: -10px -8px;
+}
+.gpSwitch:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+.gpSwitch:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+.gpSwitch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.gpSwitch b {
+  padding: 0.32em 0.65em;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 900;
+  transition: background 0.15s, color 0.15s;
+}
+.gpSwitch b.on {
+  background: rgba(255, 255, 255, 0.92);
+  color: #0a0e10;
+}

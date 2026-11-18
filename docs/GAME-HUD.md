@@ -2,7 +2,8 @@
 
 This is the canonical reference for the **desktop game HUD**: the unified frame
 that replaced the old "title, then a square window, then a card beside it"
-layout. **New games should be built on it from day one.**
+layout. **New games should use the full-screen layout ([`FULL-SCREEN.md`](./FULL-SCREEN.md)); the HUD is the
+supported alternative for games that need a setup card.**
 
 The HUD is a **layout** concern only. It does not touch your game logic, RNG,
 audio, or the lifecycle functions in `SKILL.md` — build the game, then make sure

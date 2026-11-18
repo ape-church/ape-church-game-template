@@ -1,0 +1,60 @@
+/*
+ * Immersive game frame (see ImmersiveGameFrame.tsx). Global on purpose: it
+ * reshapes the site shell around the game. Every rule is keyed on a
+ * [data-immersive-game] element being on the page, so it switches itself off
+ * on every other route and in each game's `?layout=hud` fallback view.
+ * Imported by each opted-in game's page.tsx.
+ *
+ * Unlayered CSS, so it beats the Tailwind utilities it overrides without
+ * !important. Possible follow-up: rules 1 and 2 could become a path check in
+ * ContentFrame / the root layout (IMMERSIVE routes), so the server render is
+ * already right instead of corrected by :has().
+ */
+
+:root {
+  /* NavTop is `h-20`. */
+  --immersive-nav-h: 80px;
+}
+
+/* 1. ContentFrame's padded, max 1536 px container -> full bleed. */
+.container.isolate:has([data-immersive-game]) {
+  max-width: none;
+  padding: 0;
+}
+
+/* 2. The column beside the sidebar stops reserving the sidebar's 100 px. */
+div:has(> [data-app-header]):has([data-immersive-game]) {
+  max-width: none;
+}
+
+/* 3. The left sidebar slides out on demand instead of docking (md and up;
+      phones already use the menu panel). */
+body:has([data-immersive-game]) [data-slot="sidebar-gap"] {
+  width: 0;
+}
+body:has([data-immersive-game]) [data-slot="sidebar-container"] {
+  left: calc(var(--sidebar-width) * -1);
+  z-index: 70;
+  transition:
+    left 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 240ms ease;
+}
+html[data-immersive-nav="open"] body:has([data-immersive-game]) [data-slot="sidebar-container"] {
+  left: 0;
+  box-shadow: 18px 0 56px rgba(0, 0, 0, 0.6);
+}
+
+/* 4. Browser full screen: NavTop goes too, the game takes the whole screen. */
+html:fullscreen:has([data-immersive-game]) {
+  --immersive-nav-h: 0px;
+}
+html:fullscreen:has([data-immersive-game]) [data-app-header] {
+  display: none;
+}
+
+/* 5. No pull-to-refresh (or overscroll bounce) while a game is on the page: a swipe down at the top of a full-screen
+      game reloaded it mid-session on phones. The page itself still scrolls. */
+html:has([data-immersive-game]),
+body:has([data-immersive-game]) {
+  overscroll-behavior-y: none;
+}

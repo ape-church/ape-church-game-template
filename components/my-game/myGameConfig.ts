@@ -3,6 +3,9 @@ import { Game } from "@/lib/games";
 /**
  * Layout mode for this game. See docs/GAME-HUD.md.
  *
+ * New games should prefer the FULL-SCREEN layout instead: see components/my-full-screen-game and
+ * docs/FULL-SCREEN.md. This config only switches between the setup-card layouts below.
+ *
  * - "hud" (DEFAULT — use this): the unified game HUD. One bordered frame with a
  *   slim title bar, the setup card docked in a narrow left panel, and a wide
  *   game stage taking the rest of the width. This is the platform's standard

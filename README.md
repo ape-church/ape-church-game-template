@@ -16,7 +16,15 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:3000` to see the example game running.
+Two example games run side by side. They share the same game logic and differ only in layout:
+
+| URL | Layout | Folder |
+|---|---|---|
+| `http://localhost:3000/full-screen` | **Full screen (preferred for new games).** Edge-to-edge stage with the platform's console kit at the bottom. | `components/my-full-screen-game/` |
+| `http://localhost:3000/full-screen/table` | Full-screen **table kit reference**: a custom console (chip rack, plates, big button) for table-style games. | `components/my-full-screen-game/table-kit-reference/` |
+| `http://localhost:3000` | **HUD**: the setup card docked beside the game stage. | `components/my-game/` |
+
+Pick one example folder to build from and delete the other when you're done.
 
 ---
 
@@ -24,10 +32,17 @@ Visit `http://localhost:3000` to see the example game running.
 
 ```
 app/
-  page.tsx                        # DO NOT EDIT
+  page.tsx                        # DO NOT EDIT: HUD example page
+  full-screen/                    # DO NOT EDIT: full-screen example pages
 components/
   shared/                         # DO NOT EDIT — platform components, import freely
-    GameHud.tsx                   # The standard game frame (title bar + panel + stage)
+    immersive/                    # The full-screen frame + console kit (docs/FULL-SCREEN.md)
+      ImmersiveGameFrame.tsx      # Page frame: one viewport tall, history below the fold
+      ImmersiveGameWindow.tsx     # Music, overlays, results modal (no chrome)
+      kit/                        # Console parts, KitSlotStage, skins, GP switch
+      platform.ts                 # Template stand-ins for site prefs / GP balance
+      MockSiteShell.tsx           # Template stand-in for the site nav + sidebar
+    GameHud.tsx                   # The HUD game frame (title bar + panel + stage)
     GameHudPage.tsx               # Page shell for a HUD game
     GameWindow.tsx
     WideGameWindow.tsx
@@ -36,7 +51,14 @@ components/
     CustomSlider.tsx
     ChipSelection.tsx
     ui/
-  my-game/                        # YOUR CANVAS — all your work goes here
+  my-full-screen-game/            # FULL-SCREEN EXAMPLE: start here for a new game
+    MyFullScreenGame.tsx          # Root: state + lifecycle, frame + window
+    MyFullScreenGameScene.tsx     # Your scene, laid out from the stage layout L
+    MyFullScreenGameHistory.tsx   # Below the fold
+    myFullScreenGameConfig.ts     # Symbols, payouts, limits, console skin
+    stage/                        # State mapped onto the kit's slot console + paytable
+    table-kit-reference/          # Custom console for table games (reference)
+  my-game/                        # HUD EXAMPLE
     MyGame.tsx
     MyGameWindow.tsx
     MyGameSetupCard.tsx
@@ -44,9 +66,11 @@ components/
     myGameConfig.ts               # Optional — game configuration constants
     my-game.styles.css            # Optional — game-scoped styles
 docs/
-  GAME-HUD.md                     # READ THIS — the standard game layout spec
+  FULL-SCREEN.md                  # READ THIS: the full-screen layout + console kit
+  GAME-HUD.md                     # The HUD layout spec
 public/
-  shared/                         # DO NOT EDIT — shared platform assets
+  shared/                         # DO NOT EDIT — shared platform assets (kit/ = console art)
+  my-full-screen-game/            # Full-screen example's assets
   my-game/                        # YOUR ASSETS — all game assets go here
     card.png                      # REQUIRED — 1:1 ratio (e.g. 512x512)
     banner.png                    # REQUIRED — 2:1 ratio (e.g. 1024x512)
@@ -56,7 +80,7 @@ metadata.json                     # Fill this out before submitting
 README.md
 ```
 
-Rename `my-game` throughout to match your game's name in kebab-case (e.g. `chicken-crossing`).
+Rename your example folder (`my-full-screen-game` or `my-game`) throughout to match your game's name in kebab-case (e.g. `chicken-crossing`), in both `components/` and `public/`.
 
 ---
 
@@ -80,9 +104,45 @@ Track state using `currentView`:
 
 ---
 
-## Layout — the Game HUD
+## Layout — full screen (preferred)
 
-**The Game HUD is the standard desktop layout for Ape Church games, and what new games should be built on.** Full spec: **[`docs/GAME-HUD.md`](./docs/GAME-HUD.md)** — read it before laying out your game.
+**New games should be full screen.** It is how every recent ape.church game ships (Blackjack+, Roulette, Hoo Hee How, Dojo Drop, Reel Pirates). Full spec: **[`docs/FULL-SCREEN.md`](./docs/FULL-SCREEN.md)**. Read it before laying out your game.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ [≡][< GAMES]                    [pills][HISTORY][⛶]      │
+│                                                          │
+│        your scene, edge to edge, one viewport tall       │
+│                                                          │
+│ ╭─[BALANCE]─[½ BET 2×]────[− SPINS +]─────────( SPIN )─╮ │
+│ ╰──────────────────────────────────────────────────────╯ │
+└──────────────────────────────────────────────────────────┘
+  history / leaderboard below the fold
+```
+
+```tsx
+const frame = useImmersiveFrameControls(true);
+
+<ImmersiveGameFrame backdrop={game.gameBackground} below={<History />}>
+  <ImmersiveGameWindow game={game} /* lifecycle props */>
+    <KitSkinProvider skin={MY_SKIN}>
+      <KitSlotStage scene={(L) => <MyScene L={L} />} console={consoleData} frame={frame} />
+    </KitSkinProvider>
+  </ImmersiveGameWindow>
+</ImmersiveGameFrame>
+```
+
+- **Slot-style games** (bet, count, big button) use `KitSlotStage`: map your state onto `SlotConsoleData` and the kit builds the desktop console and the phone console for you.
+- **Table-style games** (chips on a felt) build their console from the kit parts (`KitConsoleBar`, `KitPlate`, `KitChipRack`, `KitBigButton`...). See `/full-screen/table`.
+- Your scene fills the stage and keeps gameplay clear of the console (`L.bottom`) and the corner pills (`L.top`). **Never `vw`/`vh`**: size from the stage layout `L`.
+- GP is chosen on the console's balance plate (`KitGpSwitch`), never with a floating pill. Bets stay in APE in state.
+- Give the console your look with a `KitSkin` (recolour only, or your own art).
+
+---
+
+## Layout — the Game HUD (alternative)
+
+**The Game HUD is the setup-card layout** (`components/my-game`, the `/` route). Use it when your game really needs a setup card. Full spec: **[`docs/GAME-HUD.md`](./docs/GAME-HUD.md)**.
 
 It is one bordered frame: a slim title bar, your setup card docked into a narrow left panel, and a wide game stage taking the rest of the width.
 
@@ -314,7 +374,7 @@ submissions/your-team-name/your-game-name/metadata.json
 - [ ] All `address` fields are valid ERC-20 addresses
 - [ ] No TypeScript errors (`npx tsc --noEmit`)
 - [ ] No console errors in browser
-- [ ] Built on the HUD layout — see the layout checklist in `SKILL.md` § 13
+- [ ] Built on the full-screen layout (checklist in `docs/FULL-SCREEN.md` § 10), or the HUD with a reason (`SKILL.md` § 13)
 - [ ] Tested from 1280px to 2560px wide and from a short laptop window to full height
 - [ ] Mobile (`< lg`) unchanged and tested
 
